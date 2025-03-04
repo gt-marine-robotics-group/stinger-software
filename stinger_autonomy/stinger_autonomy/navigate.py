@@ -60,7 +60,7 @@ class NavigationNode(Node):
     def lidar_callback(self, msg: LaserScan):
         """Detect obstacles within a certain distance threshold."""
         min_distance = min(msg.ranges)
-        self.obstacle_detected = min_distance < 0.2  # Detect obstacles dynamically
+        self.obstacle_detected = min_distance < 0.1  # Detect obstacles dynamically
 
     def gate_callback(self, msg: Point):
         """Update gate position dynamically from vision node."""
