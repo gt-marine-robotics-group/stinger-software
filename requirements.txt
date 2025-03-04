@@ -2,3 +2,5 @@ board
 adafruit-circuitpython-icm20x
 serial
 RPi.GPIO
+cv_bridge
+opencv-python

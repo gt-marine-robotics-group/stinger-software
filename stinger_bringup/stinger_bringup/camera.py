@@ -30,10 +30,11 @@ class CameraPublisher(Node):
         # Initialize OpenCV capture for the USB camera (0 is the default device ID)
         self.image_pub = self.create_publisher(Image, '/camera/image_raw', 10) # queue size 10
         self.timer = self.create_timer(0.033, self.publish_image)  # Publish at 30 Hz
-        self.cap = cv2.VideoCapture("/dev/video5") # TODO: change this by locating the camera using cmd "ls /dev/video*"
+        self.cap = cv2.VideoCapture("/dev/video0") # TODO: change this by locating the camera using cmd "ls /dev/video*"
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.cap.set(cv2.CAP_PROP_FPS, 60) # frames per second is 60
+        self.cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
         self.br = CvBridge()
 
         if not self.cap.isOpened():

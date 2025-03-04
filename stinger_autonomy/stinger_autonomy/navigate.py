@@ -1,9 +1,14 @@
 '''
 This node sends thrust commands to the motors, avoid obstacles, and navigate to the goal position via waypointing
 
-See the stinger manual for a complete guide of task details.
-
-Search for TODO to complete this node.
+The tug starts at global position (0m,0m), with an orientation aligned with x-axis. 
+The goal position is (4m,4m). 
+The tug will need to utilize camera to find the pair of green gate to pass through to reach the goal position. 
+The mid point of the pair of green gate is (2m, 4m). 
+In this case, the tug following this trajectory is not allowed (0m,0m) -> (4m, 0m) -> (4m, 4m). 
+It has to go through the pair of green gate. 
+In front of the green gate, there is a red colored obstacle located at (1m, 4m). 
+The tug needs to use the lidar to avoid the obstacle to get to the green gate. 
 '''
 
 import rclpy
@@ -19,7 +24,7 @@ class NavigationNode(Node):
         super().__init__('navigation_node')
 
         # Subscribers
-        self.create_subscription(Odometry, '/localization/odometry', self.state_callback, 10)
+        self.create_subscription(Odometry, '/odometry/filtered', self.state_callback, 10)
         self.create_subscription(LaserScan, '/scan', self.lidar_callback, 10)
         self.create_subscription(Point, '/gate_waypoint', self.gate_callback, 10)
         self.create_subscription(Bool, '/goal_found', self.goal_callback, 10)  # Vision node signals goal detection
@@ -28,16 +33,16 @@ class NavigationNode(Node):
         self.port_motor_publisher = self.create_publisher(Float64, '/thrusters/left/thrust', 10)
         self.stbd_motor_publisher = self.create_publisher(Float64, '/thrusters/right/thrust', 10)
 
-        # TODO PID Controller gains
-        self.kp_linear = None
-        self.kp_angular = None
+        # PID Controller gains
+        self.kp_linear = 1.0
+        self.kp_angular = 2.5
 
         # State variables
         self.current_position = (0.0, 0.0)
         self.current_orientation = 0.0  # Yaw in radians
-        self.gate_position = None  # Updated using camera
+        self.gate_position = None  # Updated dynamically
         self.obstacle_detected = False
-        self.goal_reached = False  # Updated using camera
+        self.goal_reached = False  # Set by vision node
 
         self.get_logger().info("Navigation node initialized.")
 
@@ -52,11 +57,10 @@ class NavigationNode(Node):
         if not self.goal_reached:
             self.navigate()
 
-    # TODO change the thershold if needed
     def lidar_callback(self, msg: LaserScan):
         """Detect obstacles within a certain distance threshold."""
         min_distance = min(msg.ranges)
-        self.obstacle_detected = min_distance < 1.5
+        self.obstacle_detected = min_distance < 0.2  # Detect obstacles dynamically
 
     def gate_callback(self, msg: Point):
         """Update gate position dynamically from vision node."""
@@ -65,7 +69,7 @@ class NavigationNode(Node):
 
     def goal_callback(self, msg: Bool):
         """Stop the tug when the vision node detects the goal (yellow buoy)."""
-        if msg.data:  # only triggers when msg is True
+        if msg.data:  
             self.goal_reached = True
             self.stop_tug()
             self.get_logger().info("Goal reached! Stopping navigation.")
@@ -79,20 +83,21 @@ class NavigationNode(Node):
         target_x, target_y = self.gate_position
         current_x, current_y = self.current_position
 
-        # TODO Compute errors
-        distance_error = None
-        target_angle = None
+        # Compute errors
+        distance_error = math.sqrt((target_x - current_x) ** 2 + (target_y - current_y) ** 2)
+        target_angle = math.atan2(target_y - current_y, target_x - current_x)
+        angular_error = target_angle - self.current_orientation
 
-        # TODO Normalize angular error to [-pi, pi]
-        angular_error = None
+        # Normalize angular error to [-pi, pi]
+        angular_error = math.atan2(math.sin(angular_error), math.cos(angular_error))
 
         if self.obstacle_detected:
             self.avoid_obstacle()
             return
 
-        # TODO Compute control signals
-        linear_thrust = None
-        angular_thrust = None
+        # Compute control signals
+        linear_thrust = self.kp_linear * distance_error
+        angular_thrust = self.kp_angular * angular_error
 
         # Apply thrust based on under-actuated dynamics
         port_thrust = max(min(linear_thrust - angular_thrust, 100.0), -100.0)

@@ -47,6 +47,9 @@ ekf_filter_node:
         # Whether to broadcast the transformation over the /tf topic. Defaults to true if unspecified.
         publish_tf: true
 
+        # If the filter sees a jump back in time, the filter is reset (for test with rosbag)
+        reset_on_time_jump: true
+
         # REP-105 (http://www.ros.org/reps/rep-0105.html) specifies four principal coordinate frames: base_link, odom, map, and
         # earth. base_link is the coordinate frame that is affixed to the robot. Both odom and map are world-fixed frames.
         # The robot's position in the odom frame will drift over time, but is accurate in the short term and should be

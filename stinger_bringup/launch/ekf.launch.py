@@ -20,16 +20,16 @@ def generate_launch_description():
     navsat_transform_file_path = (pkg_share + '/config/navsat_transform.yaml')
 
     return LaunchDescription([
-        Node(
-            package='stinger_bringup',
-            executable='imu-node',
-            name='imu_node',
-        ),
-        Node(
-            package='stinger_bringup',
-            executable='gps-node',
-            name='gps_node',
-        ),
+        # Node(
+        #     package='stinger_bringup',
+        #     executable='imu-node',
+        #     name='imu_node',
+        # ),
+        # Node(
+        #     package='stinger_bringup',
+        #     executable='gps-node',
+        #     name='gps_node',
+        # ),
         Node(
             package='robot_localization',
             executable='ekf_node',
