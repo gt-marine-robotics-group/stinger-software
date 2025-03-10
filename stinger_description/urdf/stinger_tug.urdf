@@ -70,7 +70,7 @@
         <child link="camera_link"/>        
     </joint>
 
-    <link name="laser_frame">
+    <link name="laser">
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <mass value="0.1"/>
@@ -91,7 +91,7 @@
     <joint name="lidar_joint" type="fixed">
         <origin xyz="0 0 0.1" rpy="0 0 0"/>
         <parent link="hull_link"/>
-        <child link="laser_frame"/>        
+        <child link="laser"/>        
     </joint>
 
     <link name="imu_link">

@@ -26,6 +26,7 @@ class NavigationNode(Node):
         # Subscribers
         self.create_subscription(Odometry, '/odometry/filtered', self.state_callback, 10)
         self.create_subscription(LaserScan, '/scan', self.lidar_callback, 10)
+        self.create_subscription(LaserScan, '/scan_filtered', self.lidar_callback, 10)
         self.create_subscription(Point, '/gate_waypoint', self.gate_callback, 10)
         self.create_subscription(Bool, '/goal_found', self.goal_callback, 10)  # Vision node signals goal detection
 

@@ -29,6 +29,7 @@ setup(
             'gps-node = stinger_bringup.gps:main',
             'imu-node = stinger_bringup.imu:main',
             'motor-node = stinger_bringup.motor:main',
+            'filter-node = stinger_bringup.filter_scan:main',
         ],
     },
 )
