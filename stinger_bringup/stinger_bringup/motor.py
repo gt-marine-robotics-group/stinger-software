@@ -63,8 +63,8 @@ class ESCControlNode(Node):
     def map_thrust_to_duty_cycle(self, thrust):
         # Map thrust [0, 100] to duty cycle [5, 10] (approx. 1ms-2ms pulses)
         # dc = pulse_width/period; T = 1/f 
-        min_dc = 10
-        max_dc = 15
+        min_dc = 5
+        max_dc = 10
         duty_cycle = min_dc + (thrust * (max_dc - min_dc) / 100)
         return duty_cycle
 

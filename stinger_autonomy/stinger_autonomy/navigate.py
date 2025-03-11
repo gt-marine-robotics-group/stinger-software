@@ -9,6 +9,12 @@ In this case, the tug following this trajectory is not allowed (0m,0m) -> (4m, 0
 It has to go through the pair of green gate. 
 In front of the green gate, there is a red colored obstacle located at (1m, 4m). 
 The tug needs to use the lidar to avoid the obstacle to get to the green gate. 
+
+TODO:
+1. on & off /scan_filtered topic
+2. on & off avoid_obstacle function
+
+3. commented out send motor command
 '''
 
 import rclpy
@@ -26,7 +32,7 @@ class NavigationNode(Node):
         # Subscribers
         self.create_subscription(Odometry, '/odometry/filtered', self.state_callback, 10)
         self.create_subscription(LaserScan, '/scan', self.lidar_callback, 10)
-        self.create_subscription(LaserScan, '/scan_filtered', self.lidar_callback, 10)
+        # self.create_subscription(LaserScan, '/scan_filtered', self.lidar_callback, 10)
         self.create_subscription(Point, '/gate_waypoint', self.gate_callback, 10)
         self.create_subscription(Bool, '/goal_found', self.goal_callback, 10)  # Vision node signals goal detection
 
@@ -61,7 +67,7 @@ class NavigationNode(Node):
     def lidar_callback(self, msg: LaserScan):
         """Detect obstacles within a certain distance threshold."""
         min_distance = min(msg.ranges)
-        self.obstacle_detected = min_distance < 0.1  # Detect obstacles dynamically
+        self.obstacle_detected = min_distance < 0.8  # Detect obstacles dynamically
 
     def gate_callback(self, msg: Point):
         """Update gate position dynamically from vision node."""
@@ -93,18 +99,23 @@ class NavigationNode(Node):
         angular_error = math.atan2(math.sin(angular_error), math.cos(angular_error))
 
         if self.obstacle_detected:
-            self.avoid_obstacle()
+            # self.avoid_obstacle()
+            self.get_logger().info("Obstacle detected...")
             return
 
-        # Compute control signals
-        linear_thrust = self.kp_linear * distance_error
-        angular_thrust = self.kp_angular * angular_error
+        # Prioritize angular alignment before moving forward
+        if abs(angular_error) > 0.1:  # Small threshold for alignment
+            angular_thrust = self.kp_angular * angular_error
+            port_thrust = max(min(-angular_thrust, 100.0), -100.0)
+            stbd_thrust = max(min(angular_thrust, 100.0), -100.0)
+            self.get_logger().info(f"angular << port thrust: {port_thrust} || stbd thrust: {stbd_thrust}")
+        else:
+            linear_thrust = self.kp_linear * distance_error
+            port_thrust = max(min(linear_thrust, 100.0), -100.0)
+            stbd_thrust = max(min(linear_thrust, 100.0), -100.0)
+            self.get_logger().info(f"linear << port thrust: {port_thrust} || stbd thrust: {stbd_thrust}")
 
-        # Apply thrust based on under-actuated dynamics
-        port_thrust = max(min(linear_thrust - angular_thrust, 100.0), -100.0)
-        stbd_thrust = max(min(linear_thrust + angular_thrust, 100.0), -100.0)
-
-        self.send_motor_commands(port_thrust, stbd_thrust)
+        # self.send_motor_commands(port_thrust, stbd_thrust)
 
     def avoid_obstacle(self):
         """Rotate starboard to avoid obstacle dynamically."""
