@@ -1,7 +1,7 @@
 import pigpio
 import time
 
-SERVO_PIN = 12  # Change to your servo GPIO pin
+SERVO_PIN = 13 # Change to your servo GPIO pin
 
 pi = pigpio.pi()  # Connect to pigpio daemon
 if not pi.connected:

@@ -21,8 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'detection-node = stinger_autonomy.detection:main',
-            'navigation-node = stinger_autonomy.navigate:main',
-            'state-manager-node = stinger_autonomy.state_manager:main',
+            'controller-node = stinger_autonomy.controller:main',
         ],
     },
 )
