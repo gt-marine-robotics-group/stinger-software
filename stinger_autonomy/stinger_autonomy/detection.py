@@ -47,7 +47,7 @@ class GateTask(Node):
         self.gate_offset = 0.0 # angle offset
         self.starting_quat = None
 
-        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel_autonomy', 10)
+        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.imu_sub = self.create_subscription(Imu, '/imu/data', self.imu_callback, 10)
         self.imu_result = Imu()
         self.image_sub = self.create_subscription(Image, '/camera/image_raw', self.image_callback, 10)
@@ -70,7 +70,7 @@ class GateTask(Node):
 
         for cnt in contours:
             (x, y), radius = cv2.minEnclosingCircle(cnt)
-            if 40 < radius:  # Filter small objects
+            if 40 < radius:  # Filter small objects (radius greater than 40 pixels rn, tune as you go)
                 detected.append((int(x), int(y), int(radius)))
 
         detected_sorted = sorted(detected, key=lambda x: x[2], reverse=True)
@@ -187,10 +187,15 @@ class GateTask(Node):
         
         self.get_logger().info(f"gate_fov_bound: {gate_fov_bound}")
 
+        # to be between gate is to be done with the job
+        if gate_fov_bound > 0.8:
+            self.state = State.PassedThrough
+
         # The idea here, is that the closer we get to the gates, they will move closer towards the bounds of our FOV
-        if gate_fov_bound > 0.7:
-            self.state = State.Push
-            self.pre_push_time = self.get_clock().now()
+        # if gate_fov_bound > 0.7:
+        #     self.state = State.Push
+        #     self.pre_push_time = self.get_clock().now()
+
         return cmd_vel
     
     def push(self):

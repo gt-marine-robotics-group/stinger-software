@@ -21,7 +21,7 @@ class ControllerNode(Node):
 
         # TODO; Tune PID Controller gains
         self.kp_linear = 1.0
-        self.kp_angular = 2.5
+        self.kp_angular = 0.1
 
         # State variables
         self.current_position = (0.0, 0.0)
@@ -41,15 +41,17 @@ class ControllerNode(Node):
     def lidar_callback(self, msg: LaserScan):
         """Detect obstacles within a certain distance threshold."""
         min_distance = min(msg.ranges)
-        self.obstacle_detected = min_distance < 0.8
+        self.obstacle_detected = min_distance < 0.05 # the safety bubble radius be 0.05m
+        if self.obstacle_detected:
+            self.get_logger().info("Obstacle detected")
 
     def cmd_vel_callback(self, msg: Twist):
         """Process velocity commands and convert to motor thrust."""
-        linear_thrust = self.kp_linear * msg.linear.x
-        angular_thrust = self.kp_angular * msg.angular.z
+        linear_thrust = self.kp_linear * msg.linear.x # msg.linear.x in m/s
+        angular_thrust = self.kp_angular * msg.angular.z # msg.angular.z in rad/s
 
-        port_thrust = max(min(linear_thrust - angular_thrust, 100.0), -100.0)
-        stbd_thrust = max(min(linear_thrust + angular_thrust, 100.0), -100.0)
+        port_thrust = max(min(linear_thrust - angular_thrust, 100.0), 0.0)
+        stbd_thrust = max(min(linear_thrust + angular_thrust, 100.0), 0.0)
 
         self.get_logger().info(f"port thrust: {port_thrust} || stbd thrust: {stbd_thrust}")
         self.send_motor_commands(port_thrust, stbd_thrust)
