@@ -155,8 +155,8 @@ class GateTask(Node):
 
         self.get_logger().info(f"{turn_angle}")
 
-        # Command to go in that direction
-        cmd_vel.angular.z = self.angular_correction_factor * turn_angle
+        if abs(cmd_vel.angular.z) > 0.1:
+            cmd_vel.angular.z = np.sign(cmd_vel.angular.z) * 0.1
 
         if abs(turn_angle) < 0.1:
             self.state = State.Approaching
@@ -182,14 +182,17 @@ class GateTask(Node):
         self.gate_offset = turn_angle
 
         cmd_vel.angular.z = self.angular_correction_factor * turn_angle
-        cmd_vel.linear.x = 0.5
+        if abs(cmd_vel.angular.z) > 0.1:
+            cmd_vel.angular.z = np.sign(cmd_vel.angular.z) * 0.1
+        cmd_vel.linear.x = 0.1
         gate_fov_bound = self.calculate_gate_fov_bound(left_gate_x, right_gate_x)
         
         self.get_logger().info(f"gate_fov_bound: {gate_fov_bound}")
 
         # to be between gate is to be done with the job
-        if gate_fov_bound > 0.8:
-            self.state = State.PassedThrough
+        if gate_fov_bound > 0.95:
+            self.pre_push_time = self.get_clock().now()
+            self.state = State.Passing_Through
 
         # The idea here, is that the closer we get to the gates, they will move closer towards the bounds of our FOV
         # if gate_fov_bound > 0.7:
@@ -198,38 +201,38 @@ class GateTask(Node):
 
         return cmd_vel
     
-    def push(self):
-        # First a little push to get closer to the center of the gate
-        cmd_vel = Twist()
-        cmd_vel.linear.x = 0.5
-        if (self.get_clock().now() - self.pre_push_time).nanoseconds // 1e9 > 2:
-            self.state = State.Orientation_Correction
-        self.get_logger().info(f"{(self.get_clock().now() - self.pre_push_time).nanoseconds // 1e9}")
-        return cmd_vel
+    # def push(self):
+    #     # First a little push to get closer to the center of the gate
+    #     cmd_vel = Twist()
+    #     cmd_vel.linear.x = 0.5
+    #     if (self.get_clock().now() - self.pre_push_time).nanoseconds // 1e9 > 2:
+    #         self.state = State.Orientation_Correction
+    #     self.get_logger().info(f"{(self.get_clock().now() - self.pre_push_time).nanoseconds // 1e9}")
+    #     return cmd_vel
     
-    def correct_orientation(self):
-        # First give a little push
-        cmd_vel = Twist()
-        quat = self.imu_result.orientation
-        current_quat = [quat.x, quat.y, quat.z, quat.w]
-        if self.starting_quat is None:
-            self.starting_quat = current_quat
-        quat_error = tf_transformations.quaternion_multiply(
-            tf_transformations.quaternion_inverse(self.starting_quat),
-            current_quat
-        )
-        _, _, yaw_change = tf_transformations.euler_from_quaternion(quat_error)
-        desired_change = -self.gate_offset
-        self.get_logger().info(f"{yaw_change} {desired_change}")
-        cmd_vel.angular.z = (desired_change - yaw_change) * self.angular_correction_factor
-        if abs(yaw_change - desired_change) < 0.17:
-            self.state = State.Passing_Through
-            self.pre_push_time = self.get_clock().now()
-        return cmd_vel
+    # def correct_orientation(self):
+    #     # First give a little push
+    #     cmd_vel = Twist()
+    #     quat = self.imu_result.orientation
+    #     current_quat = [quat.x, quat.y, quat.z, quat.w]
+    #     if self.starting_quat is None:
+    #         self.starting_quat = current_quat
+    #     quat_error = tf_transformations.quaternion_multiply(
+    #         tf_transformations.quaternion_inverse(self.starting_quat),
+    #         current_quat
+    #     )
+    #     _, _, yaw_change = tf_transformations.euler_from_quaternion(quat_error)
+    #     desired_change = -self.gate_offset
+    #     self.get_logger().info(f"{yaw_change} {desired_change}")
+    #     cmd_vel.angular.z = (desired_change - yaw_change) * self.angular_correction_factor
+    #     if abs(yaw_change - desired_change) < 0.17:
+    #         self.state = State.Passing_Through
+    #         self.pre_push_time = self.get_clock().now()
+    #     return cmd_vel
     
     def pass_through(self):
         cmd_vel = Twist()
-        cmd_vel.linear.x = 0.5
+        cmd_vel.linear.x = 0.1
         if (self.get_clock().now() - self.pre_push_time).nanoseconds // 1e9 > 2:
             self.state = State.PassedThrough
         self.get_logger().info(f"{(self.get_clock().now() - self.pre_push_time).nanoseconds // 1e9}")
