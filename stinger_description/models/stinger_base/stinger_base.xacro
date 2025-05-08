@@ -14,21 +14,21 @@
     <link name="hull_link">
       <inertial>
         <pose>-0.05 0 -0.15 0 0 0</pose>
-        <mass value="30"/>
+        <mass value="7"/>
         <inertia ixx="2.42369" ixy="0" ixz="0" iyy="3.9235025" iyz="0" izz="5.6403125"/>
       </inertial>
       <collision>
-          <origin xyz="0 0 0.05" rpy="0 0 0"/>
+          <origin xyz="0 0 -0.1" rpy="0 0 0"/>
           <geometry>
                 <box size="0.381 0.204 0.135" />
           </geometry>
       </collision>
-      <!-- <visual name="hull_visual">
+      <visual name="hull_visual">
         <geometry>
           <mesh filename="file://$(find stinger_description)/models/stinger_base/meshes/stinger_hull.dae"/>
         </geometry>
-      </visual> -->
-      <visual name="motor_stbd_visual">
+      </visual>
+      <!-- <visual name="motor_stbd_visual">
         <geometry>
           <mesh filename="file://$(find stinger_description)/models/stinger_base/meshes/stinger_prop.dae"/>
         </geometry>
@@ -37,30 +37,10 @@
         <geometry>
           <mesh filename="file://$(find stinger_description)/models/stinger_base/meshes/stinger_prop.dae"/>
         </geometry>
-      </visual>
+      </visual> -->
     </link>
 
     <link name="camera_link">
-        <visual>
-            <origin xyz="-0.03 0 0" rpy="0 0 0"/>
-            <geometry>
-                <box size="0.06 0.15 0.15" />
-            </geometry>
-            <material name="white" />
-        </visual>
-        <visual>
-            <origin xyz="0.03 0 0" rpy="0 ${pi/2} 0"/>
-            <geometry>
-                <cylinder length="0.06" radius="0.04" />
-            </geometry>
-            <material name="blue" />
-        </visual>
-        <collision>
-            <origin xyz="0.0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <box size="0.12 0.15 0.15" />
-            </geometry>
-        </collision>
         <!-- <xacro:inertial_box mass="0.1" x="0.12" y="0.15" z="0.15">
             <origin xyz="0.0 0 0" rpy="0 0 0"/>
         </xacro:inertial_box> -->
@@ -73,17 +53,6 @@
     </joint>
 
     <link name="lidar_link">
-        <visual>
-            <geometry>
-                <cylinder radius="0.05" length="0.04"/>
-            </geometry>
-            <material name="red"/>
-        </visual>
-        <collision>
-            <geometry>
-                <cylinder radius="0.05" length="0.04"/>
-            </geometry>
-        </collision>
         <!-- <xacro:inertial_cylinder mass="0.1" length="0.04" radius="0.05">
             <origin xyz="0 0 0" rpy="0 0 0"/>
         </xacro:inertial_cylinder> -->
@@ -132,6 +101,18 @@
       <parent link="hull_link"/>
       <child link="gps_link"/>
     </joint>
+    <!-- hydrodynamics and control plugins -->
+  <gazebo>
+    <plugin
+      filename="gz-sim-hydrodynamics-system"
+      name="gz::sim::systems::Hydrodynamics">
+      <link_name> base_link </link_name>
+      <!-- Linear and quadratic drag in heave -->
+      <zW>-5.0</zW>       <!-- Linear drag (N·s/m) -->
+      <zWabsW>-10.0</zWabsW> <!-- Quadratic drag (N·s²/m²) -->
+    </plugin>
+  </gazebo>
+
 
     </xacro:macro>
 </robot>
