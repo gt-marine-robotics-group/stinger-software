@@ -24,18 +24,13 @@ if(BUILD_TESTING)
 endif()
 
 install(
-  DIRECTORY urdf
+  DIRECTORY
+  models
+  launch
+  hooks
+  urdf
   DESTINATION share/${PROJECT_NAME}
 )
-
-install(
-  DIRECTORY hooks
-  DESTINATION share/${PROJECT_NAME}
-)
-
-install(
-  DIRECTORY models
-  DESTINATION share/${PROJECT_NAME}
-)
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/hooks/gz_sim_paths.dsv.in")
 
 ament_package()
