@@ -12,12 +12,16 @@ stinger_bringup
     launch file for publishing odom using robot localization
     launch file for publishing static tf
     node for controlling the motors
+    launch file for simulation
 stinger_description
     urdf  of the boat
 stinger_autonomy
     detection.py
     navigate.py
     state_manager.py
+stinger_sim
+    simulation world definition
+    hooks and bridges for sensor emulation
 ```
 
 ## Quick Start 
@@ -38,4 +42,9 @@ Autonomy nodes:
 ```
     ros2 run stinger_autonomy detection-node
     ros2 run stinger_autonomy controller-node
+```
+
+## Simulation Quick start
+```
+ros2 launch stinger_bringup vehicle_sim.launch.py
 ```
