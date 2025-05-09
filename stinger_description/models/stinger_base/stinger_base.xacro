@@ -7,8 +7,8 @@
 
     <link name="hull_link">
       <inertial>
-        <pose>0.0 0.0 -0.041 0 0 0</pose>
-        <mass value="8"/>
+        <pose>0.0 0.0 -0.2 0 0 0</pose>
+        <mass value="5"/>
         <inertia ixx="2.42369" ixy="0" ixz="0" iyy="3.9235025" iyz="0" izz="5.6403125"/>
       </inertial>
       <visual name="hull_visual">
@@ -18,6 +18,36 @@
         </geometry>
       </visual>
     </link>
+
+    <!-- port hull -->
+    <link name="hull_port_link">
+      <collision>
+          <origin xyz="0 0.0765 -0.05" rpy="0 0 0"/>
+          <geometry>
+                <box size="0.381 0.081 0.135" />
+          </geometry>
+      </collision>
+    </link>
+    <joint name="hull_port_joint" type="fixed">
+      <origin xyz="0 0 0"/>
+      <parent link="hull_link"/>
+      <child link="hull_port_link"/>
+    </joint>
+
+    <!-- starboard hull -->
+    <link name="hull_stbd_link">
+      <collision>
+          <origin xyz="0 -0.0765 -0.05" rpy="0 0 0"/>
+          <geometry>
+                <box size="0.381 0.081 0.135" />
+          </geometry>
+      </collision>
+    </link>
+    <joint name="hull_stbd_joint" type="fixed">
+      <origin xyz="0 0 0"/>
+      <parent link="hull_link"/>
+      <child link="hull_stbd_link"/>
+    </joint>
 
     <!-- Thrusters -->
     <xacro:prop_macro thruster_id="port">
@@ -101,6 +131,7 @@
       <parent link="hull_link"/>
       <child link="gps_link"/>
     </joint>
+
     <!-- hydrodynamics and control plugins -->
     <gazebo>
       <plugin
@@ -111,6 +142,24 @@
         <zWabsW>-10.0</zWabsW>
         <mQ>-50.0</mQ>
         <mQabsQ>-100.0</mQabsQ>
+        
+        <!-- Linear Drag -->
+        <xU>-5</xU> <!-- Surge -->
+        <yV>-5</yV> <!-- Sway -->
+        <zW>-5</zW> <!-- Heave -->
+        <kP>-10</kP> <!-- Roll-->
+        <mQ>-5</mQ> <!-- Pitch -->
+        <nR>-5</nR> <!-- Yaw-->
+
+        <xUabsU>-10</xUabsU>
+        <yVabsV>-60</yVabsV>
+        <zWabsW>-60</zWabsW>
+        <kPabsP>-10</kPabsP>
+        <mQabsQ>-60</mQabsQ>
+        <nRabsR>-50</nRabsR>
+
+        <default_current> 0.025 -0.025 0.5</default_current>
+
       </plugin>
     </gazebo>
 
