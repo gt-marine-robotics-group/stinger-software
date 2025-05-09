@@ -6,7 +6,7 @@
 
     <joint name="camera_joint_${camera_id}" type="fixed">
       <xacro:insert_block name="origin"/>
-      <parent link="base_link"/>
+      <parent link="hull_link"/>
       <child link="camera_${camera_id}"/>
       <axis xyz="1 0 0"/>
     </joint>
@@ -37,7 +37,7 @@
 
     <joint name="lidar_joint" type="fixed">
       <xacro:insert_block name="origin"/>
-      <parent link="base_link"/>
+      <parent link="hull_link"/>
       <child link="lidar"/>
       <axis xyz="1 0 0"/>
     </joint>
@@ -67,10 +67,53 @@
         <always_on>1</always_on>
         <update_rate>10</update_rate>
         <visualize>true</visualize>
-        <topic>stinger/scan</topic>
+        <topic>stinger/laser/scan</topic>
 
         <!-- This tag isn't recognized by SDF but is extremely important for getting the correct TF data for the sonar frame-->
         <gz_frame_id>lidar</gz_frame_id>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="imu_macro" params="*origin">
+    <link name="imu"/>
+
+    <joint name="imu_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="hull_link"/>
+      <child link="imu"/>
+      <axis xyz="1 0 0"/>
+    </joint>
+
+    <gazebo reference="imu">
+      <sensor name="imu_sensor" type="imu">
+        <pose>0 0 0 0 0 0</pose>
+        <always_on>1</always_on>
+        <topic>stinger/imu/data</topic>
+        <enable_metrics>true</enable_metrics>
+        <update_rate>1000</update_rate>
+
+        <!-- This tag isn't recognized by SDF but is extremely important for getting the correct TF data for the IMU frame-->
+        <gz_frame_id>imu</gz_frame_id>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gps_macro" params="*origin">
+    <link name="gps_link"/>
+
+    <joint name="gps_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="hull_link"/>
+      <child link="gps_link"/>
+    </joint>
+
+    <gazebo reference="gps_link">
+      <sensor name="gps_sensor" type="navsat">
+        <always_on>1</always_on>
+        <update_rate>10</update_rate>
+        <topic>stinger/gps/fix</topic>
+        <gz_frame_id>gps</gz_frame_id>
       </sensor>
     </gazebo>
   </xacro:macro>

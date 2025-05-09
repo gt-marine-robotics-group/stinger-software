@@ -5,9 +5,20 @@
     <!-- Configure the scene -->
     <scene>
       <!-- For turquoise ambient -->
+      <sky></sky>
+      <grid>false</grid>
       <ambient>0.0 1 1</ambient>
       <background>0.0 0.7 0.8</background>
     </scene>
+
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>33.724223</latitude_deg>
+      <longitude_deg>-84.3880</longitude_deg>
+      <elevation>16.0</elevation>
+      <heading_deg>0.0</heading_deg>
+    </spherical_coordinates>
 
     <!-- Configure the world physics -->
     <physics name="1ms" type="dart">
@@ -48,6 +59,10 @@
     <plugin
       filename="gz-sim-air-pressure-system"
       name="gz::sim::systems::AirPressure">
+    </plugin>
+    <plugin
+      filename="gz-sim-navsat-system"
+      name="gz::sim::systems::NavSat">
     </plugin>
 
     <!-- Configure the GUI -->
@@ -203,20 +218,22 @@
 
     </gui>
 
-    <model name="translucent_plane">
+
+    <!-- Simulated Water Surface -->
+    <model name="translucent_box">
       <static>true</static>
+      <pose> 0 0 -2 0 0 0</pose>
       <link name="link">
         <visual name="visual">
           <geometry>
-            <plane>
-              <normal>0 0 1</normal>
-              <size>50 50</size>
-            </plane>
+            <box>
+              <size>50 50 4</size>
+            </box>
           </geometry>
           <material>
-            <ambient>1 1 1 0.3</ambient>
-            <diffuse>1 1 1 0.3</diffuse>
-            <transparency>0.2</transparency>
+            <ambient>1 1 1 0.5</ambient>
+            <diffuse>1 1 1 0.5</diffuse>
+            <transparency>0.8</transparency>
           </material>
         </visual>
       </link>
@@ -224,44 +241,18 @@
 
 
     <!-- 3D MODELS -->
-    <light name='sun1' type='directional'>
-      <pose>-10 0 8 0 0 0</pose>
-      <cast_shadows>false</cast_shadows>
-      <intensity>2</intensity>
-      <direction>-0.5 0.10000000000000001 -0.90000000000000002</direction>
-      <diffuse>0.800000012 0.800000012 0.800000012 1</diffuse>
-      <specular>0.200000003 0.200000003 0.200000003 1</specular>
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>-5 0 10 0 0 0</pose>
+      <diffuse>0.9 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
       <attenuation>
         <range>1000</range>
+        <constant>0.9</constant>
         <linear>0.01</linear>
-        <constant>0.90000000000000002</constant>
         <quadratic>0.001</quadratic>
       </attenuation>
-      <spot>
-        <inner_angle>0</inner_angle>
-        <outer_angle>0</outer_angle>
-        <falloff>0</falloff>
-      </spot>
-    </light>
-
-    <light name='sun2' type='point'>
-      <pose>-10 0 8 0 0 0</pose>
-      <cast_shadows>false</cast_shadows>
-      <intensity>2</intensity>
-      <direction>-0.5 0.10000000000000001 -0.90000000000000002</direction>
-      <diffuse>0.800000012 0.800000012 0.800000012 1</diffuse>
-      <specular>0.200000003 0.200000003 0.200000003 1</specular>
-      <attenuation>
-        <range>1000</range>
-        <linear>0.01</linear>
-        <constant>0.90000000000000002</constant>
-        <quadratic>0.001</quadratic>
-      </attenuation>
-      <spot>
-        <inner_angle>0</inner_angle>
-        <outer_angle>0</outer_angle>
-        <falloff>0</falloff>
-      </spot>
+      <direction>0.5 0.1 -0.9</direction>
     </light>
 
     <model name="red_buoy">

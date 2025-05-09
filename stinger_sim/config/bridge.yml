@@ -5,10 +5,22 @@
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/stinger/scan"
-  gz_topic_name: "/stinger/scan"
+- ros_topic_name: "/stinger/laser/scan"
+  gz_topic_name: "/stinger/laser/scan"
   ros_type_name: "sensor_msgs/msg/LaserScan"
   gz_type_name: "gz.msgs.LaserScan"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/stinger/imu/data"
+  gz_topic_name: "/stinger/imu/data"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/stinger/gps/fix"
+  gz_topic_name: "/stinger/gps/fix"
+  ros_type_name: "sensor_msgs/msg/NavSatFix"
+  gz_type_name: "gz.msgs.NavSat"
   direction: GZ_TO_ROS
 
 # Thrusters
@@ -18,7 +30,7 @@
   ros_type_name: "std_msgs/msg/Float64"
   gz_type_name: "gz.msgs.Double"
   direction: ROS_TO_GZ
-
+# Thruster starboard
 - ros_topic_name: "/stinger/thruster_stbd/cmd_thrust"
   gz_topic_name: "/model/stinger/joint/prop_joint_stbd/cmd_thrust"
   ros_type_name: "std_msgs/msg/Float64"

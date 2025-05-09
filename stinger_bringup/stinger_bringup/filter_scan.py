@@ -9,11 +9,11 @@ class LidarFilterNode(Node):
 
         # Subscribe to original LiDAR scan
         self.scan_subscriber = self.create_subscription(
-            LaserScan, '/stinger/scan', self.lidar_callback, 10)
+            LaserScan, '/stinger/laser/scan', self.lidar_callback, 10)
 
         # Publisher for filtered scan
         self.scan_publisher = self.create_publisher(
-            LaserScan, '/stinger/scan_filtered', 10)
+            LaserScan, '/stinger/laser/scan_filtered', 10)
 
     def lidar_callback(self, msg: LaserScan):
         """Filter out LiDAR points in the 120° to 240° range and republish."""

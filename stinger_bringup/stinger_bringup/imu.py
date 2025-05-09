@@ -44,7 +44,7 @@ class IMUPublisher(Node):
         self.ORIENT_NOISE = 0.05  # quaternion std dev
         
         # publish IMU data
-        self.imu_pub = self.create_publisher(Imu, '/imu/data', 10)
+        self.imu_pub = self.create_publisher(Imu, '/stinger/imu/data', 10)
         self.timer = self.create_timer(0.1, self.publish_imu_data)  # Publish at 10 Hz
 
     def euler_to_quaternion(self, roll, pitch, yaw):
