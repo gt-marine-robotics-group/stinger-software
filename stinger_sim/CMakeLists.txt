@@ -15,7 +15,6 @@ install(DIRECTORY
     launch
     config
     worlds
-    models
     DESTINATION share/${PROJECT_NAME}
 )
 
