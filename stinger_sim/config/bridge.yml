@@ -1,4 +1,4 @@
-# Camera Forward
+# Sensors
 - ros_topic_name: "/stinger/camera_0/image_raw"
   gz_topic_name: "/stinger/camera_0/image_raw"
   ros_type_name: "sensor_msgs/msg/Image"
@@ -10,3 +10,17 @@
   ros_type_name: "sensor_msgs/msg/LaserScan"
   gz_type_name: "gz.msgs.LaserScan"
   direction: GZ_TO_ROS
+
+# Thrusters
+# Thruster port
+- ros_topic_name: "/stinger/thruster_port/cmd_thrust"
+  gz_topic_name: "/model/stinger/joint/prop_joint_port/cmd_thrust"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "gz.msgs.Double"
+  direction: ROS_TO_GZ
+
+- ros_topic_name: "/stinger/thruster_stbd/cmd_thrust"
+  gz_topic_name: "/model/stinger/joint/prop_joint_stbd/cmd_thrust"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "gz.msgs.Double"
+  direction: ROS_TO_GZ

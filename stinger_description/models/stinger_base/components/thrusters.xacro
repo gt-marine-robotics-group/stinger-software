@@ -34,24 +34,18 @@
     <joint name="prop_joint_${thruster_id}" type="continuous">
       <parent link="thruster_${thruster_id}"/>
       <child link="propeller_${thruster_id}"/>
-      <axis xyz="0 0 1"/>
+      <axis xyz="1 0 0"/>
     </joint>
 
-    <!-- Prop information:
-	    Max Thrust: 51.5 N
-	    Max Rotation Rate: 370 Rad/s
-	    Thruster Coefficient: .0109 1/Rad^2
-    -->
-
+    <!-- TODO: Get the correct values for these -->
     <gazebo>
       <plugin
         filename="gz-sim-thruster-system"
         name="gz::sim::systems::Thruster">
         <joint_name>prop_joint_${thruster_id}</joint_name>
-        <thrust_coefficient>0.0109</thrust_coefficient>
+        <thrust_coefficient>0.005</thrust_coefficient>
         <fluid_density>1000</fluid_density>
-        <propeller_diameter>0.076</propeller_diameter>
-        <velocity_control>true</velocity_control>
+        <propeller_diameter>0.0594</propeller_diameter>
       </plugin>
     </gazebo>
   </xacro:macro>
