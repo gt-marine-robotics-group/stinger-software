@@ -1,28 +1,20 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stinger_base">
     <xacro:include filename="$(find stinger_description)/models/stinger_base/components/sensors.xacro"/>
+    <xacro:include filename="$(find stinger_description)/models/stinger_base/components/thrusters.xacro"/>
 
-    <material name="white">
-      <color rgba="1 1 1 1"/>
-    </material>
-    <material name="blue">
-      <color rgba="0 0 1 1"/>
-    </material>
-    <material name="red">
-      <color rgba="1 0 0 1"/>
-    </material>
     <xacro:macro name="stinger_base">
 
     <link name="hull_link">
       <inertial>
-        <pose>-0.05 0 -0.15 0 0 0</pose>
-        <mass value="7"/>
+        <pose>0.0 0.0 -0.2 0 0 0</pose>
+        <mass value="8"/>
         <inertia ixx="2.42369" ixy="0" ixz="0" iyy="3.9235025" iyz="0" izz="5.6403125"/>
       </inertial>
       <collision>
-          <origin xyz="0 0 -0.1" rpy="0 0 0"/>
+          <origin xyz="0.0 0 -0.1" rpy="0 0 0"/>
           <geometry>
-                <box size="0.381 0.204 0.135" />
+              <box size="0.381 0.204 0.135" />
           </geometry>
       </collision>
       <visual name="hull_visual">
@@ -31,29 +23,46 @@
           <mesh filename="file://$(find stinger_description)/models/stinger_base/meshes/stinger_hull.dae"/>
         </geometry>
       </visual>
-      <!-- <visual name="motor_stbd_visual">
-        <geometry>
-          <mesh filename="file://$(find stinger_description)/models/stinger_base/meshes/stinger_prop.dae"/>
-        </geometry>
-      </visual>
-      <visual name="motor_port_visual">
-        <geometry>
-          <mesh filename="file://$(find stinger_description)/models/stinger_base/meshes/stinger_prop.dae"/>
-        </geometry>
-      </visual> -->
     </link>
 
+    <!-- Thrusters -->
+    <xacro:prop_macro thruster_id="stbd">
+      <origin xyz="-0.19 0.073 -0.041" rpy="0 0 0" />
+    </xacro:prop_macro>
+    <xacro:prop_macro thruster_id="port">
+      <origin xyz="-0.19 -0.073 -0.041 " rpy="0 0 0" />
+    </xacro:prop_macro>
+
+
+    <!-- Offset weight from propellers to maintain buoyancy -->
+    <!-- TODO: Find a better way to do this -->
+    <link name="box_offset">
+      <inertial>
+        <mass value="0.2" />
+        <origin xyz="0.19 0 0" />
+        <inertia ixx="0.2" ixy="0.0" ixz="0.0"
+                iyy="0.2" iyz="0.0"
+                izz="0.2" />
+      </inertial>
+    </link>
+    <joint name="offset_joint" type="fixed">
+      <origin xyz="0 0 0"/>
+      <parent link="hull_link"/>
+      <child link="box_offset"/>
+    </joint>
+
+    <!-- Sensors -->
     <xacro:camera_macro camera_id="0">
       <origin xyz="0.1 0 0" rpy="0 0 0" />
     </xacro:camera_macro>
 
     <xacro:lidar_macro>
-      <origin xyz="0.1 0 0.1" rpy="0 0 0" />
+      <origin xyz="0.1 0 0.025" rpy="0 0 0" />
     </xacro:lidar_macro>
 
     <link name="imu_link">
       <inertial>
-        <pose>0 0 0 0 0 0</pose>
+        <pose>0.1 0 0 0 0 0</pose>
         <mass value="0.1"/>
         <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
       </inertial>
@@ -71,11 +80,6 @@
     </joint>
 
     <link name="gps_link">
-      <inertial>
-        <pose>0 0 0 0 0 0</pose>
-        <mass value="0.1"/>
-        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
-      </inertial>
       <sensor name="gps_sensor" type="gps">
         <pose degrees="true">0 0 0 180 0 0</pose>
         <always_on>1</always_on>
@@ -89,16 +93,17 @@
       <child link="gps_link"/>
     </joint>
     <!-- hydrodynamics and control plugins -->
-  <gazebo>
-    <plugin
-      filename="gz-sim-hydrodynamics-system"
-      name="gz::sim::systems::Hydrodynamics">
-      <link_name> base_link </link_name>
-      <!-- Linear and quadratic drag in heave -->
-      <zW>-5.0</zW>       <!-- Linear drag (N·s/m) -->
-      <zWabsW>-10.0</zWabsW> <!-- Quadratic drag (N·s²/m²) -->
-    </plugin>
-  </gazebo>
+    <gazebo>
+      <plugin
+        filename="gz-sim-hydrodynamics-system"
+        name="gz::sim::systems::Hydrodynamics">
+        <link_name> base_link </link_name>
+        <zW>-5.0</zW>
+        <zWabsW>-10.0</zWabsW>
+        <mQ>-50.0</mQ>
+        <mQabsQ>-100.0</mQabsQ>
+      </plugin>
+    </gazebo>
 
 
     </xacro:macro>
