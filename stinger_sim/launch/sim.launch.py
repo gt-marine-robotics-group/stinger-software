@@ -34,15 +34,15 @@ def generate_launch_description():
     bridge_config_path = os.path.join(pkg_stinger_sim, 'config','bridge.yml')
 
     # Bridge
-    # bridge = Node(
-    #     package='ros_gz_bridge',
-    #     executable='parameter_bridge',
-    #     parameters=[{'config_file': bridge_config_path}],
-    #     output='screen'
-    # )
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        parameters=[{'config_file': bridge_config_path}],
+        output='screen'
+    )
 
     return LaunchDescription([
         world_arg,
         gz_sim,
-        # bridge
+        bridge
     ])
