@@ -4,8 +4,6 @@ from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.actions import DeclareLaunchArgument
-from launch_ros.actions import Node
-import os
 
 def generate_launch_description():
 
@@ -14,12 +12,6 @@ def generate_launch_description():
         default_value = 'default.world'
     )
     world = LaunchConfiguration('world')
-
-    static_arg = DeclareLaunchArgument(
-        'static',
-        default_value = 'false'
-    )
-    static = LaunchConfiguration('static')
 
     gzsim = launch.actions.IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -40,12 +32,10 @@ def generate_launch_description():
                 'spawn.launch.py'
             ])
         ),
-        launch_arguments = {'static': static}.items()
     )
 
     return LaunchDescription([
         world_arg,
-        static_arg,
         gzsim,
         spawn_vehicle,
     ])
