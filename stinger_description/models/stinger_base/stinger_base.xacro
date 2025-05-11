@@ -99,7 +99,7 @@
     </xacro:lidar_macro>
 
     <xacro:imu_macro>
-      <origin xyz="-0.05 0 0.025" rpy="0 0 0" />
+      <origin xyz="-0.05 0 0.025" rpy="3.14 0 0" />
     </xacro:imu_macro>
 
     <xacro:gps_macro>
