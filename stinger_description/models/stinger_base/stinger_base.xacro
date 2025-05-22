@@ -22,72 +22,55 @@
     <!-- port hull -->
     <link name="hull_port_link">
       <collision>
-          <origin xyz="0 0.0765 -0.05" rpy="0 0 0"/>
+          <origin xyz="0.095 0.0 0.0" rpy="0 0 0"/>
           <geometry>
-                <box size="0.381 0.081 0.135" />
+                <box size="0.19 0.081 0.135" />
+          </geometry>
+      </collision>
+      <collision>
+          <origin xyz="-0.095 0.0 0.0" rpy="0 0 0"/>
+          <geometry>
+                <box size="0.19 0.081 0.135" />
           </geometry>
       </collision>
     </link>
     <joint name="hull_port_joint" type="fixed">
-      <origin xyz="0 0 0"/>
+      <origin xyz="0.0 0.0765 -0.035"/>
       <parent link="hull_link"/>
       <child link="hull_port_link"/>
     </joint>
 
     <!-- starboard hull -->
-    <link name="hull_stbd_link">
+    <link name="hull_stbd__link">
       <collision>
-          <origin xyz="0 -0.0765 -0.05" rpy="0 0 0"/>
+          <origin xyz="0.095 0 0" rpy="0 0 0"/>
           <geometry>
-                <box size="0.381 0.081 0.135" />
+            <box size="0.19 0.081 0.135" />
+          </geometry>
+      </collision>
+
+      <collision>
+          <origin xyz="-0.095 0 0" rpy="0 0 0"/>
+          <geometry>
+            <box size="0.19 0.081 0.135" />
           </geometry>
       </collision>
     </link>
-    <joint name="hull_stbd_joint" type="fixed">
-      <origin xyz="0 0 0"/>
+    <joint name="hull_stbd__joint" type="fixed">
+      <origin xyz="0.0 -0.0765 -0.035"/>
       <parent link="hull_link"/>
-      <child link="hull_stbd_link"/>
+      <child link="hull_stbd__link"/>
     </joint>
+
 
     <!-- Thrusters -->
     <xacro:prop_macro thruster_id="port">
       <origin xyz="-0.19 0.073 -0.041" rpy="0 0 0" />
     </xacro:prop_macro>
+
     <xacro:prop_macro thruster_id="stbd">
-      <origin xyz="-0.19 -0.073 -0.041 " rpy="0 0 0" />
+      <origin xyz="-0.19 -0.073 -0.041" rpy="0 0 0" />
     </xacro:prop_macro>
-
-    <!-- Offset weight from propellers to maintain buoyancy -->
-    <!-- TODO: Find a better way to do this -->
-    <link name="box_offset_1">
-      <inertial>
-        <mass value="0.1" />
-        <origin xyz="0.19 0.073 -0.041" />
-        <inertia ixx="0.1" ixy="0.0" ixz="0.0"
-                iyy="0.1" iyz="0.0"
-                izz="0.1" />
-      </inertial>
-    </link>
-    <joint name="offset_joint_1" type="fixed">
-      <origin xyz="0 0 0"/>
-      <parent link="hull_link"/>
-      <child link="box_offset_1"/>
-    </joint>
-
-    <link name="box_offset_2">
-      <inertial>
-        <mass value="0.1" />
-        <origin xyz="0.19 -0.073 -0.041" />
-        <inertia ixx="0.1" ixy="0.0" ixz="0.0"
-                iyy="0.1" iyz="0.0"
-                izz="0.1" />
-      </inertial>
-    </link>
-    <joint name="offset_joint_2" type="fixed">
-      <origin xyz="0 0 0"/>
-      <parent link="hull_link"/>
-      <child link="box_offset_2"/>
-    </joint>
 
     <!-- Sensors -->
     <xacro:camera_macro camera_id="0">
@@ -112,10 +95,6 @@
         filename="gz-sim-hydrodynamics-system"
         name="gz::sim::systems::Hydrodynamics">
         <link_name> base_link </link_name>
-        <zW>-5.0</zW>
-        <zWabsW>-10.0</zWabsW>
-        <mQ>-50.0</mQ>
-        <mQabsQ>-100.0</mQabsQ>
         
         <!-- Linear Drag -->
         <xU>-5</xU> <!-- Surge -->
@@ -132,8 +111,14 @@
         <mQabsQ>-60</mQabsQ>
         <nRabsR>-50</nRabsR>
       </plugin>
-    </gazebo>
 
+      <!-- Publishes perfect odometry data for ground truth -->
+      <plugin
+        filename="gz-sim-odometry-publisher-system"
+        name="gz::sim::systems::OdometryPublisher">
+        <dimensions>3</dimensions>
+      </plugin>
+    </gazebo>
 
     </xacro:macro>
 </robot>
