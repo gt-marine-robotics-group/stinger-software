@@ -41,7 +41,7 @@
     </joint>
 
     <!-- starboard hull -->
-    <link name="hull_stbd__link">
+    <link name="hull_stbd_link">
       <collision>
           <origin xyz="0.095 0 0" rpy="0 0 0"/>
           <geometry>
@@ -56,10 +56,10 @@
           </geometry>
       </collision>
     </link>
-    <joint name="hull_stbd__joint" type="fixed">
+    <joint name="hull_stbd_joint" type="fixed">
       <origin xyz="0.0 -0.0765 -0.035"/>
       <parent link="hull_link"/>
-      <child link="hull_stbd__link"/>
+      <child link="hull_stbd_link"/>
     </joint>
 
 
