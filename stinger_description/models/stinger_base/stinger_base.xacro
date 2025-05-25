@@ -8,8 +8,8 @@
     <link name="hull_link">
       <inertial>
         <pose>0.0 0.0 -0.13 0 0 0</pose>
-        <mass value="5"/>
-        <inertia ixx="2.42369" ixy="0" ixz="0" iyy="3.9235025" iyz="0" izz="5.6403125"/>
+        <mass value="3"/>
+        <inertia ixx="1.42369" ixy="0" ixz="0" iyy="2.9235025" iyz="0" izz="3.6403125"/>
       </inertial>
       <visual name="hull_visual">
         <origin rpy="0 0 3.1416"/>
@@ -21,17 +21,22 @@
 
     <!-- port hull -->
     <link name="hull_port_link">
+      <inertial>
+        <mass value="1.0"/>
+        <inertia ixx="0.01" iyy="0.01" izz="0.01"
+                ixy="0.0" ixz="0.0" iyz="0.0"/>
+      </inertial>
       <collision>
-          <origin xyz="0.095 0.0 0.0" rpy="0 0 0"/>
-          <geometry>
-                <box size="0.19 0.081 0.135" />
-          </geometry>
+        <origin xyz="0.095 0.0 0.0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.19 0.081 0.135" />
+        </geometry>
       </collision>
       <collision>
-          <origin xyz="-0.095 0.0 0.0" rpy="0 0 0"/>
-          <geometry>
-                <box size="0.19 0.081 0.135" />
-          </geometry>
+        <origin xyz="-0.095 0.0 0.0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.19 0.081 0.135" />
+        </geometry>
       </collision>
     </link>
     <joint name="hull_port_joint" type="fixed">
@@ -42,17 +47,22 @@
 
     <!-- starboard hull -->
     <link name="hull_stbd_link">
+      <inertial>
+        <mass value="1.0"/>
+        <inertia ixx="0.01" iyy="0.01" izz="0.01"
+                ixy="0.0" ixz="0.0" iyz="0.0"/>
+      </inertial>
       <collision>
-          <origin xyz="0.095 0 0" rpy="0 0 0"/>
-          <geometry>
-            <box size="0.19 0.081 0.135" />
-          </geometry>
+        <origin xyz="0.095 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.19 0.081 0.135" />
+        </geometry>
       </collision>
 
       <collision>
-          <origin xyz="-0.095 0 0" rpy="0 0 0"/>
-          <geometry>
-            <box size="0.19 0.081 0.135" />
+        <origin xyz="-0.095 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.19 0.081 0.135" />
           </geometry>
       </collision>
     </link>
