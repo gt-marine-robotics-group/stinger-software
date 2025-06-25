@@ -27,6 +27,14 @@ stinger_sim
 ## Quick Start 
 Follow INSTALL.md to install all the requirements
 
+For Research Demo Tug:
+```
+ssh tug1@192.168.8.189
+pw: boats0519
+
+### use the GLiNet AX3000 to rebroadcast, basestation needs to be on the same network
+```
+
 Bringup nodes:
 ```
     ros2 launch stinger_bringup sensors.launch.py
