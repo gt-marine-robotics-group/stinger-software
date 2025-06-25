@@ -36,7 +36,7 @@ def generate_launch_description():
             name='ekf_filter_node',
             parameters=[robot_localization_file_path],
             remappings=[
-            ("/example/imu", "/imu/data"),
+            ("/example/imu", "/stinger/imu/data"),
             ],
         ),    
         Node(
@@ -46,7 +46,7 @@ def generate_launch_description():
             parameters=[navsat_transform_file_path],
             respawn=True,
             remappings=[
-            ('/imu', '/imu/data'),
+            ('/imu', '/stinger/imu/data'),
             ],
         )
     ])

@@ -43,9 +43,9 @@ class ESCControlNode(Node):
 
         # ROS2 subscriptions
         self.port_subscription = self.create_subscription(
-            Float64, '/thrusters/left/thrust', self.port_callback, 10)
+            Float64, '/stinger/thruster_port/cmd_thrust', self.port_callback, 10)
         self.stbd_subscription = self.create_subscription(
-            Float64, '/thrusters/right/thrust', self.stbd_callback, 10)
+            Float64, '/stinger/thruster_stbd/cmd_thrust', self.stbd_callback, 10)
 
         self.get_logger().info('ESC control node started. Listening for thrust commands.')
 

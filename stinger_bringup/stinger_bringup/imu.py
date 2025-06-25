@@ -1,6 +1,6 @@
 '''
 Adafruit TDK InvenSense ICM-20948 9-DoF IMU (4554)
-This node is publish topic /imu/data
+This node is publish topic /stinger/imu/data
 
 1. linear acceleration [m/s^2]
 2. angular velocity [rad/s]

@@ -36,7 +36,7 @@ Bringup nodes:
     ros2 launch stinger_bringup ekf.launch.py
     ros2 launch stinger_bringup tf.launch.py
     ros2 run stinger_bringup motor-node
-        - ros2 topic pub /thrusters/left/thrust std_msgs/msg/Float64 "data: 20.0"
+        - ros2 topic pub /stinger/thruster_port/cmd_thrust std_msgs/msg/Float64 "{data: 20.0}"
 ```
 Autonomy nodes:
 ```

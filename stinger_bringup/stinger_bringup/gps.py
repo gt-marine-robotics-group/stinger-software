@@ -1,6 +1,6 @@
 '''
 GT-U7 GPS Module
-This node is publishing topic /gps/fix
+This node is publishing topic /stinger/gps/fix
 
 Resources:
 1. https://receiverhelp.trimble.com/alloy-gnss/en-us/NMEA-0183messages_MessageOverview.html
@@ -26,7 +26,7 @@ class GpsPublisher(Node):
         baudrate = self.get_parameter('baudrate').get_parameter_value().integer_value
 
         self.serial_port = serial.Serial(port, baudrate, timeout=1)
-        self.publisher_ = self.create_publisher(NavSatFix, '/gps/fix', 10)
+        self.publisher_ = self.create_publisher(NavSatFix, '/stinger/gps/fix', 10)
         
         self.timer = self.create_timer(0.5, self.read_serial_data)
 
