@@ -27,6 +27,12 @@ stinger_sim
 ## Quick Start 
 Follow INSTALL.md to install all the requirements
 
+GLiNet AX3000
+Connect to wifi on your laptop: GL-MT3000-0a9  OR     GL-MT3000-0a9-5G
+Password: boats0519
+
+Admin password for logging in from web: @boats0519
+
 For Research Demo Tug:
 ```
 ssh tug1@192.168.8.189
