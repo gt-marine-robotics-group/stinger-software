@@ -29,6 +29,14 @@ stinger_sim
 ## Quick Start 
 Follow INSTALL.md to install all the requirements
 
+Connect to wifi on your laptop: `GL-MT3000-0a9`  OR  `GL-MT3000-0a9-5G`
+  - Password: `boats0519`
+
+For Research Demo Tug:
+```
+ssh tug1@192.168.8.189
+pw: boats0519
+
 Before bringup, grant necessary permissions in the terminal that you are going to launch the sensor:
 ```
     sudo pigpiod # for motors
