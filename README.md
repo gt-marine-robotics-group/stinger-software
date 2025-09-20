@@ -36,6 +36,7 @@ For Research Demo Tug:
 ```
 ssh tug1@192.168.8.189
 pw: boats0519
+```
 
 Before bringup, grant necessary permissions in the terminal that you are going to launch the sensor:
 ```
