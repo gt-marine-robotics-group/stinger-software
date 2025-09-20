@@ -2,6 +2,7 @@
 
 ## ROS2 Package Dependency
 ``` sudo apt install ros-humble-robot-localization ```
+```sudo apt install ros-humble-urdfdom-py```
 
 ## Required Python Libraries
 ```pip3 install -r requirements.txt```
