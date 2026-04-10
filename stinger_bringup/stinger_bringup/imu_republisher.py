@@ -32,13 +32,15 @@ class ImuRepublisher(Node):
         transform = None
         # Extract transform from imu to base link from tf tree
         try:
+            # Using rclpy.time.Time() asks for the most recent transform instantly without waiting
             transform = self.tf_buffer.lookup_transform(
                 target_frame='base_link',
                 source_frame=msg.header.frame_id,
-                time=rclpy.time.Time(),
-                timeout=Duration(seconds=1.0)
+                time=rclpy.time.Time() 
             )
-        except:
+        except Exception as e:
+            # Ripped the black tape off the check engine light!
+            self.get_logger().error(f"TF Error: {e}")
             return None
 
         # Extract transform rotation
@@ -72,13 +74,15 @@ class ImuRepublisher(Node):
         transformed_msg.linear_acceleration.x = lin_acc[0]
         transformed_msg.linear_acceleration.y = lin_acc[1]
         transformed_msg.linear_acceleration.z = lin_acc[2]
-
+        transformed_msg.orientation_covariance = [0.01, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.01]
+        transformed_msg.angular_velocity_covariance = [0.01, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.01]
+        transformed_msg.linear_acceleration_covariance = [0.01, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.01]
         return transformed_msg
 
     def imu_callback(self, msg: Imu):
         msg_base_link: Imu = self.transfrom_imu(msg)
         if msg_base_link is None:
-            self.get_logger().warn("Failed to get transform, skipping")
+            self.get_logger().warn("Failed to get transform, skipping, fart")
             return
         q = msg_base_link.orientation
         quat = [q.x, q.y, q.z, q.w]
