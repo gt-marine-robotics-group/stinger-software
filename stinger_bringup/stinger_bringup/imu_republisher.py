@@ -32,15 +32,13 @@ class ImuRepublisher(Node):
         transform = None
         # Extract transform from imu to base link from tf tree
         try:
-            # Using rclpy.time.Time() asks for the most recent transform instantly without waiting
             transform = self.tf_buffer.lookup_transform(
                 target_frame='base_link',
                 source_frame=msg.header.frame_id,
-                time=rclpy.time.Time() 
+                time=rclpy.time.Time(),
+                timeout=Duration(seconds=1.0)
             )
-        except Exception as e:
-            # Ripped the black tape off the check engine light!
-            self.get_logger().error(f"TF Error: {e}")
+        except:
             return None
 
         # Extract transform rotation

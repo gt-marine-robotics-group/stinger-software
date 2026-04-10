@@ -24,13 +24,6 @@ def generate_launch_description():
             parameters=[robot_localization_file_path],
         ),    
         Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            name='imu_static_publisher',
-            # Arguments: X Y Z Yaw Pitch Roll Parent_Frame Child_Frame
-            arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'imu_link'] 
-        ),
-        Node(
             package='robot_localization',
             executable='navsat_transform_node',
             name='navsat_transform_node',
@@ -41,7 +34,7 @@ def generate_launch_description():
             # Example: (topic, remaped_topic)
             ### STUDENT CODE HERE
                 ('imu', '/stinger/imu/relative'), 
-                ('gps/fix', '/stinger/gps/fix'),
+                ('gps/fix', '/gps/fix'),
                 ('odometry/filtered', '/odometry/filtered')
             ### END STUDENT CODE
             ],
