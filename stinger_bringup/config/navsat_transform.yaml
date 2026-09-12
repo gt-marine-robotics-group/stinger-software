@@ -1,5 +1,6 @@
 navsat_transform_node:
     ros__parameters:
+        use_sim_time: false
         magnetic_declination_radians: 0.0
         yaw_offset: 0.0
         zero_altitude: false

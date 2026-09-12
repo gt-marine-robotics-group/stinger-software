@@ -41,17 +41,18 @@ def generate_launch_description():
     ld.append(spawn_vehicle)
 
     # TODO: Uncomment after completing section 4
-    localization = launch.actions.IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution([
-                get_package_share_directory('stinger_bringup'),
-                'launch',
-                'localization.launch.py'
-            ]),
-        ),
-    )
-    # Delay to allow sensors to populate
-    delayed_localization = TimerAction(period=5.0, actions=[localization])
-    ld.append(delayed_localization)
+    # localization = launch.actions.IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         PathJoinSubstitution([
+    #             get_package_share_directory('stinger_bringup'),
+    #             'launch',
+    #             'localization.launch.py'
+    #         ]),
+    #     ),
+    #     launch_arguments = {'use_sim_time': 'true'}.items()
+    # )
+    # # Delay to allow sensors to populate
+    # delayed_localization = TimerAction(period=5.0, actions=[localization])
+    # ld.append(delayed_localization)
 
     return LaunchDescription(ld)

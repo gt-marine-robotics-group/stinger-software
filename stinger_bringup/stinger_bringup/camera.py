@@ -22,15 +22,26 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+
+img_qos = QoSProfile(
+    reliability=ReliabilityPolicy.BEST_EFFORT,
+    history=HistoryPolicy.KEEP_LAST,
+    depth=1,
+)
 
 class CameraPublisher(Node):
     def __init__(self):
         super().__init__('usbcamera_publisher')
         
         # Initialize OpenCV capture for the USB camera (0 is the default device ID)
-        self.image_pub = self.create_publisher(Image, '/stinger/camera_0/image_raw', 10) # queue size 10
+        self.image_pub = self.create_publisher(
+            Image,
+            '/stinger/camera_0/image_raw',
+            img_qos
+        ) # queue size 10
         self.timer = self.create_timer(0.033, self.publish_image)  # Publish at 30 Hz
-        self.cap = cv2.VideoCapture("/dev/video0") # TODO: change this by locating the camera using cmd "ls /dev/video*"
+        self.cap = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L2) # TODO: change this by locating the camera using cmd "ls /dev/video*"
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.cap.set(cv2.CAP_PROP_FPS, 60) # frames per second is 60
@@ -56,7 +67,7 @@ class CameraPublisher(Node):
 
             # Publish the image frame
             self.image_pub.publish(msg)
-            self.get_logger().info("Publishing image frame...")
+            self.get_logger().info("Camera streaming active at 30 FPS", throttle_duration_sec=5.0)
         else:
             self.get_logger().error("Failed to capture image.")
             

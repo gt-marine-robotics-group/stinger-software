@@ -1,0 +1,7 @@
+.vscode/
+
+# Byte-compiled / optimized / DLL support files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
