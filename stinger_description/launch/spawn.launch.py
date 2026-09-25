@@ -13,6 +13,14 @@ import xacro
 def generate_launch_description():
     gazebo_arg = DeclareLaunchArgument('gazebo', default_value='True')
     gazebo_config = LaunchConfiguration('gazebo', default='True')
+    robot_name_arg = DeclareLaunchArgument('robot_name', default_value='stinger')
+    robot_name = LaunchConfiguration('robot_name')
+    x_arg = DeclareLaunchArgument('x', default_value='0.0')
+    x = LaunchConfiguration('x')
+    y_arg = DeclareLaunchArgument('y', default_value='0.0')
+    y = LaunchConfiguration('y')
+    z_arg = DeclareLaunchArgument('z', default_value='0.0')
+    z = LaunchConfiguration('z')
 
     # URDF File Path
     xacro_file = os.path.join(
@@ -27,6 +35,7 @@ def generate_launch_description():
     # Robot description publisher
     robot_state_publisher = Node(
         name = 'robot_state_publisher',
+        namespace = robot_name,
         package = 'robot_state_publisher',
         executable = 'robot_state_publisher',
         output = 'screen',
@@ -34,7 +43,13 @@ def generate_launch_description():
     )
 
     # URDF spawner
-    args = ['-name', 'stinger', '-topic', 'robot_description']
+    args = [
+        '-name', robot_name,
+        '-topic', ["/", robot_name, '/robot_description'],
+        '-x', x,
+        '-y', y,
+        '-z', z,
+    ]
     spawn = Node(
         package='ros_gz_sim', 
         executable='create', 
@@ -45,6 +60,10 @@ def generate_launch_description():
 
     return LaunchDescription([
         gazebo_arg,
+        robot_name_arg,
+        x_arg,
+        y_arg,
+        z_arg,
         robot_state_publisher,
         spawn
     ])
