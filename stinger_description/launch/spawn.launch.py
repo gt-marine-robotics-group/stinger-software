@@ -32,6 +32,7 @@ def generate_launch_description():
     # Robot description publisher
     robot_state_publisher = Node(
         name = 'robot_state_publisher',
+        namespace = robot_name,
         package = 'robot_state_publisher',
         executable = 'robot_state_publisher',
         output = 'screen',
@@ -42,7 +43,13 @@ def generate_launch_description():
     )
 
     # URDF spawner
-    args = ['-name', 'stinger', '-topic', 'robot_description']
+    args = [
+        '-name', robot_name,
+        '-topic', ["/", robot_name, '/robot_description'],
+        '-x', x,
+        '-y', y,
+        '-z', z,
+    ]
     spawn = Node(
         package='ros_gz_sim', 
         executable='create', 

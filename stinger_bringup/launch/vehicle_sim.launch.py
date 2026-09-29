@@ -37,7 +37,7 @@ def generate_launch_description():
     )
     ld.append(gzsim)
 
-    spawn_vehicle = launch.actions.IncludeLaunchDescription(
+    spawn_vehicle_1 = launch.actions.IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([
                 get_package_share_directory('stinger_description'),
@@ -47,7 +47,23 @@ def generate_launch_description():
         ),
         launch_arguments={'use_sim_time': use_sim_time}.items(),
     )
-    ld.append(spawn_vehicle)
+    ld.append(spawn_vehicle_1)
+
+    spawn_vehicle_2 = launch.actions.IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                get_package_share_directory('stinger_description'),
+                'launch',
+                'spawn.launch.py'
+            ])
+        ),
+        launch_arguments={
+            'robot_name': 'stinger_2',
+            'x': '0.0',
+            'y': '5.0',
+        }.items(),
+    )
+    ld.append(spawn_vehicle_2)
 
     # TODO: Uncomment after completing section 4
     # localization = launch.actions.IncludeLaunchDescription(
