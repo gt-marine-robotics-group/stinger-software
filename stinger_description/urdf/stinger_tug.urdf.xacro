@@ -1,12 +1,17 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stinger_tug">
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="namespace" default="$(arg prefix)"/>
+  <xacro:arg name="topic_prefix" default="stinger"/>
   <xacro:include filename="$(find stinger_description)/models/stinger_base/stinger_base.xacro"/>
-  <link name="base_link">
+  <link name="$(arg namespace)base_link">
   </link>
-  <xacro:stinger_base />
-  <joint name="hull_joint" type="fixed">
+  <xacro:stinger_base
+    prefix="$(arg namespace)"
+    topic_prefix="$(arg topic_prefix)"/>
+  <joint name="$(arg namespace)hull_joint" type="fixed">
     <origin xyz="0 0 0"/>
-    <parent link="base_link"/>
-    <child link="hull_link"/>
+    <parent link="$(arg namespace)base_link"/>
+    <child link="$(arg namespace)hull_link"/>
   </joint>
 </robot>

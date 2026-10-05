@@ -3,17 +3,17 @@
 
   <xacro:property name="prop_mesh" value="file://$(find stinger_description)/models/stinger_base/meshes/stinger_prop.dae"/>
 
-  <xacro:macro name="prop_macro" params="thruster_id *origin">
+  <xacro:macro name="prop_macro" params="prefix thruster_id *origin">
 
-    <link name="thruster_${thruster_id}"/>
-    <joint name="thruster_joint_${thruster_id}" type="fixed">
+    <link name="${prefix}thruster_${thruster_id}"/>
+    <joint name="${prefix}thruster_joint_${thruster_id}" type="fixed">
       <xacro:insert_block name="origin"/>
-      <parent link="base_link"/>
-      <child link="thruster_${thruster_id}"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}thruster_${thruster_id}"/>
       <axis xyz="1 0 0"/>
     </joint>
 
-    <link name="propeller_${thruster_id}">
+    <link name="${prefix}propeller_${thruster_id}">
 
       <!-- The inertial values need to be reasonable or gazebo will crash -->
       <inertial>
@@ -31,9 +31,9 @@
 
     </link>
 
-    <joint name="prop_joint_${thruster_id}" type="continuous">
-      <parent link="thruster_${thruster_id}"/>
-      <child link="propeller_${thruster_id}"/>
+    <joint name="${prefix}prop_joint_${thruster_id}" type="continuous">
+      <parent link="${prefix}thruster_${thruster_id}"/>
+      <child link="${prefix}propeller_${thruster_id}"/>
       <axis xyz="1 0 0"/>
     </joint>
 
@@ -42,7 +42,7 @@
       <plugin
         filename="gz-sim-thruster-system"
         name="gz::sim::systems::Thruster">
-        <joint_name>prop_joint_${thruster_id}</joint_name>
+        <joint_name>${prefix}prop_joint_${thruster_id}</joint_name>
         <thrust_coefficient>0.005</thrust_coefficient>
         <fluid_density>1000</fluid_density>
         <propeller_diameter>0.0594</propeller_diameter>
