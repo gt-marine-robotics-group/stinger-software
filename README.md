@@ -108,3 +108,46 @@ Autonomy nodes:
 The motor node consumes `/thrusters/left/thrust` and `/thrusters/right/thrust` as values in `[-100, 100]`. The controller launch publishes `/stinger/thruster_port/cmd_thrust` and `/stinger/thruster_stbd/cmd_thrust`; connecting these to the hardware motor interface requires agreed routing and units in the hardware bringup work.
 
 The planned `vehicle_real.launch.py` must default `use_sim_time` to `false` and explicitly forward it to every included launch and node that accepts it. If localization supplies the robot-state publisher, pass `publish_robot_description:=true`; if the hardware wrapper supplies one, pass `false`. Run exactly one publisher. Keep shared YAML clock defaults at `false`, with launch overrides after the YAML parameters.
+## Simulation Quick start
+```bash
+ros2 launch stinger_bringup vehicle_sim.launch.py
+```
+
+## Container Environment (Qix)
+
+This stack uses [Qix](https://github.gatech.edu/ASDL-Robotics/qix) to manage reproducible ROS 2 Jazzy container environments.
+
+### 1. Install & Enter the Container
+From the root of `stinger-software`:
+```bash
+# Build and setup the container
+qix stack install .
+
+# Enter the container shell
+qix stack enter stinger-software
+```
+
+### 2. Install ROS Dependencies (Inside Container)
+To install binary dependencies for workspace packages:
+```bash
+rosdep update
+rosdep install --from-paths /workspace/src --ignore-src -y -r
+```
+
+### 3. Recording Rosbags
+Host storage is bind-mounted to `~/bags` inside the container:
+```bash
+# Records bag directly to ~/bags on your host machine
+ros2 bag record -o ~/bags/<bag_name> <topics>
+```
+
+## Multi-Vehicle Simulation (Lyoko)
+
+To run multi-boat experiments in simulation using [Lyoko](https://github.gatech.edu/ASDL-Robotics/lyoko):
+
+```bash
+# Launch two simulated stingers in a shared Gazebo world
+ros2 launch lyoko_gz_bringup spawn_experiment.launch.py experiment_name:=two_stingers
+```
+
+This starts the simulation world, computes staggered spawn poses, spawns each boat's URDF, configures per-vehicle topic bridges, and launches bringup stacks under `/stinger_1` and `/stinger_2`.
