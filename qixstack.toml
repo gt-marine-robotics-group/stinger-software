@@ -5,6 +5,9 @@ version = "26.10.1"
 [container]
 base = "ros:jazzy"
 package-manager = "apt"
+mounts = [
+    { source = "$HOME/bags", target = "/home/stinger-software/bags" }
+]
 pre-setup = [
     "touch /var/mail/ubuntu && chown ubuntu /var/mail/ubuntu && userdel -r ubuntu"
 ]
