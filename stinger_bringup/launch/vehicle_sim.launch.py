@@ -17,6 +17,14 @@ def generate_launch_description():
     world = LaunchConfiguration('world')
     ld.append(world_arg)
 
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use the Gazebo clock for simulated vehicle nodes'
+    )
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    ld.append(use_sim_time_arg)
+
     gzsim = launch.actions.IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([
@@ -37,21 +45,26 @@ def generate_launch_description():
                 'spawn.launch.py'
             ])
         ),
+        launch_arguments={'use_sim_time': use_sim_time}.items(),
     )
     ld.append(spawn_vehicle)
 
     # TODO: Uncomment after completing section 4
-    localization = launch.actions.IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution([
-                get_package_share_directory('stinger_bringup'),
-                'launch',
-                'localization.launch.py'
-            ]),
-        ),
-    )
-    # Delay to allow sensors to populate
-    delayed_localization = TimerAction(period=5.0, actions=[localization])
-    ld.append(delayed_localization)
+    # localization = launch.actions.IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         PathJoinSubstitution([
+    #             get_package_share_directory('stinger_bringup'),
+    #             'launch',
+    #             'localization.launch.py'
+    #         ]),
+    #     ),
+    #     launch_arguments={
+    #         'use_sim_time': use_sim_time,
+    #         'publish_robot_description': 'false'
+    #     }.items()
+    # )
+    # # Delay to allow sensors to populate
+    # delayed_localization = TimerAction(period=5.0, actions=[localization])
+    # ld.append(delayed_localization)
 
     return LaunchDescription(ld)
