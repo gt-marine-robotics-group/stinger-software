@@ -113,6 +113,78 @@ The planned `vehicle_real.launch.py` must default `use_sim_time` to `false` and 
 ros2 launch stinger_bringup vehicle_sim.launch.py
 ```
 
+## Multi-boat Simulation
+
+Build the workspace once, then source its overlay in every terminal used for
+the simulation:
+
+```bash
+cd ~/colcon_ws/src
+colcon build --symlink-install
+source install/setup.bash
+```
+
+Start the simulation and the first boat (`stinger`) in Terminal 1:
+
+```bash
+cd ~/colcon_ws/src
+source install/setup.bash
+ros2 launch stinger_bringup vehicle_sim.launch.py
+```
+
+Spawn a second boat named `stinger2` three metres from the first in Terminal 2:
+
+```bash
+cd ~/colcon_ws/src
+source install/setup.bash
+ros2 launch stinger_description spawn.launch.py \
+  robot_name:=stinger2 prefix:=stinger2_ topic_prefix:=stinger2 \
+  use_sim_time:=true x:=3.0 y:=0.0
+```
+
+Start the second boat's Gazebo bridge and localization in separate terminals:
+
+```bash
+# Terminal 3
+cd ~/colcon_ws/src
+source install/setup.bash
+ros2 launch stinger_sim vehicle_bridge.launch.py \
+  model_name:=stinger2 topic_prefix:=stinger2 frame_prefix:=stinger2_
+```
+
+```bash
+# Terminal 4
+cd ~/colcon_ws/src
+source install/setup.bash
+ros2 launch stinger_bringup localization.launch.py \
+  robot_name:=stinger2 prefix:=stinger2_ use_sim_time:=true
+```
+
+Check that both boats have separate ROS topics and that the second boat's
+simulated sensors are publishing:
+
+```bash
+ros2 topic list | grep -E '^/(stinger|stinger2)/'
+ros2 topic echo --once /stinger/imu/data
+ros2 topic echo --once /stinger2/imu/data
+```
+
+To verify the second boat's thruster command bridge, publish a small thrust
+command briefly, then send zero thrust to stop it. The boat will move while
+thrust is applied:
+
+```bash
+ros2 topic pub --rate 5 --times 10 /stinger2/thruster_port/cmd_thrust \
+  std_msgs/msg/Float64 "{data: 5.0}"
+ros2 topic pub --once /stinger2/thruster_port/cmd_thrust \
+  std_msgs/msg/Float64 "{data: 0.0}"
+```
+
+Use a unique `robot_name`, `topic_prefix`, and `prefix` for each additional
+boat, and set a distinct `x`/`y` spawn position. For each one, start its own
+`spawn.launch.py`, `vehicle_bridge.launch.py`, and `localization.launch.py`
+instances using those matching names and prefixes.
+
 ## Container Environment (Qix)
 
 This stack uses [Qix](https://github.gatech.edu/ASDL-Robotics/qix) to manage reproducible ROS 2 Jazzy container environments.
