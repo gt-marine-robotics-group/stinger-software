@@ -49,6 +49,22 @@ def generate_launch_description():
     )
     ld.append(spawn_vehicle)
 
+    vehicle_bridge = launch.actions.IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                get_package_share_directory('stinger_sim'),
+                'launch',
+                'vehicle_bridge.launch.py'
+            ])
+        ),
+        launch_arguments={
+            'model_name': 'stinger',
+            'topic_prefix': 'stinger',
+            'frame_prefix': '',
+        }.items(),
+    )
+    ld.append(vehicle_bridge)
+
     # TODO: Uncomment after completing section 4
     # localization = launch.actions.IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
