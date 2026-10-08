@@ -38,7 +38,12 @@ class ImuRepublisher(Node):
                 time=rclpy.time.Time(),
                 timeout=Duration(seconds=1.0)
             )
-        except:
+        except Exception as e:
+            self.get_logger().warn(
+                f"TF lookup 'base_link' <- '{msg.header.frame_id}' failed: "
+                f"{type(e).__name__}: {e}",
+                throttle_duration_sec=2.0
+            )
             return None
 
         # Extract transform rotation
@@ -72,6 +77,9 @@ class ImuRepublisher(Node):
         transformed_msg.linear_acceleration.x = lin_acc[0]
         transformed_msg.linear_acceleration.y = lin_acc[1]
         transformed_msg.linear_acceleration.z = lin_acc[2]
+        transformed_msg.orientation_covariance = [0.01, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.01]
+        transformed_msg.angular_velocity_covariance = [0.01, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.01]
+        transformed_msg.linear_acceleration_covariance = [0.01, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.01]
 
         return transformed_msg
 
@@ -92,8 +100,8 @@ class ImuRepublisher(Node):
         msg_base_link.linear_acceleration.z = acceleration_world[2]
 
         msg_base_link.angular_velocity.x = angular_velocity[0]
-        msg_base_link.angular_velocity.x = angular_velocity[1]
-        msg_base_link.angular_velocity.x = angular_velocity[2]
+        msg_base_link.angular_velocity.y = angular_velocity[1]
+        msg_base_link.angular_velocity.z = angular_velocity[2]
         self.imu_pub.publish(msg_base_link)
 
 def main(args=None):

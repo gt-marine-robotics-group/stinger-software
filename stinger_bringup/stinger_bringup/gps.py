@@ -26,7 +26,7 @@ class GpsPublisher(Node):
         baudrate = self.get_parameter('baudrate').get_parameter_value().integer_value
 
         self.serial_port = serial.Serial(port, baudrate, timeout=1)
-        self.publisher_ = self.create_publisher(NavSatFix, '/gps/fix', 10)
+        self.publisher_ = self.create_publisher(NavSatFix, '/stinger/gps/fix', 10)
         
         self.timer = self.create_timer(0.5, self.read_serial_data)
 
@@ -53,7 +53,7 @@ class GpsPublisher(Node):
             msg.latitude = latitude
             msg.longitude = longitude
             msg.altitude = altitude
-            msg.header.frame_id = 'gps_frame'
+            msg.header.frame_id = 'gps_link'
             msg.header.stamp = self.get_clock().now().to_msg()
 
             # self.get_logger().info(f'GPS Fix:: Lat={latitude}, Long={longitude}, Alt={altitude}')

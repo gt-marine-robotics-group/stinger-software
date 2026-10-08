@@ -13,6 +13,7 @@ Output:USB2.0
 '''
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
@@ -25,7 +26,10 @@ class Detection(Node):
 
         self.image_width = 480
 
-        self.image_sub = self.create_subscription(Image, '/stinger/camera_0/image_raw', self.image_callback, 10)
+        self.image_sub = self.create_subscription(
+            Image, '/stinger/camera_0/image_raw', self.image_callback,
+            qos_profile_sensor_data
+        )
         self.gate_pos_pub = self.create_publisher(Gate, '/stinger/gate_location', 10)
         self.bridge = CvBridge()
         self.hsv = np.array([])

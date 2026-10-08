@@ -13,6 +13,11 @@ import xacro
 def generate_launch_description():
     gazebo_arg = DeclareLaunchArgument('gazebo', default_value='True')
     gazebo_config = LaunchConfiguration('gazebo', default='True')
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use the simulation clock; hardware launches must pass false'
+    )
 
     # URDF File Path
     xacro_file = os.path.join(
@@ -30,7 +35,10 @@ def generate_launch_description():
         package = 'robot_state_publisher',
         executable = 'robot_state_publisher',
         output = 'screen',
-        parameters = [{'robot_description': robot_description}]
+        parameters = [{
+            'robot_description': robot_description,
+            'use_sim_time': LaunchConfiguration('use_sim_time')
+        }]
     )
 
     # URDF spawner
@@ -45,6 +53,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         gazebo_arg,
+        use_sim_time_arg,
         robot_state_publisher,
         spawn
     ])
