@@ -3,9 +3,9 @@
   <xacro:arg name="prefix" default="__default__"/>
   <xacro:arg name="namespace" default="__default__"/>
   <xacro:arg name="topic_prefix" default="__default__"/>
-  <xacro:property name="frame_prefix" value="$(eval arg('prefix') if arg('prefix') != '__default__' else (arg('namespace') + '_' if arg('namespace') != '__default__' else ''))"/>
-  <xacro:property name="resolved_topic_prefix" value="$(eval arg('topic_prefix') if arg('topic_prefix') != '__default__' else (arg('namespace') if arg('namespace') != '__default__' else 'stinger'))"/>
-  <xacro:property name="model_name" value="$(eval arg('namespace') + '_stinger_tug' if arg('namespace') != '__default__' else 'stinger')"/>
+  <xacro:property name="frame_prefix" value="${xacro.arg('prefix') if xacro.arg('prefix') != '__default__' else xacro.arg('namespace') + '_' if xacro.arg('namespace') != '__default__' else ''}"/>
+  <xacro:property name="resolved_topic_prefix" value="${xacro.arg('topic_prefix') if xacro.arg('topic_prefix') != '__default__' else xacro.arg('namespace') if xacro.arg('namespace') != '__default__' else 'stinger'}"/>
+  <xacro:property name="model_name" value="${xacro.arg('namespace') + '_stinger_tug' if xacro.arg('namespace') != '__default__' else 'stinger'}"/>
   <xacro:include filename="$(find stinger_description)/models/stinger_base/simulation/gz.xacro"/>
   <xacro:include filename="$(find stinger_description)/models/stinger_base/stinger_base.xacro"/>
   <link name="${frame_prefix}base_link">
