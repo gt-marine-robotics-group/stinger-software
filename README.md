@@ -82,9 +82,13 @@ The planned `vehicle_real.launch.py` must default `use_sim_time` to `false` and 
 ros2 launch stinger_bringup vehicle_sim.launch.py
 ```
 
-## Multi-boat Simulation
+## Standalone Multi-boat Simulation (without Lyoko)
 
-Start the simulation and the first boat (`stinger`) in Terminal 1:
+Use this flow when launching Stinger's own Gazebo world. Do not use it together
+with the Lyoko experiment below: `vehicle_sim.launch.py` starts its own world,
+boat, and bridge.
+
+Start the simulation and first boat (`stinger`) in Terminal 1:
 
 ```bash
 ros2 launch stinger_bringup vehicle_sim.launch.py
@@ -146,13 +150,126 @@ Host storage is bind-mounted to `~/bags` inside the container:
 ros2 bag record -o ~/bags/<bag_name> <topics>
 ```
 
-## Multi-Vehicle Simulation (Lyoko)
+## Two-Stinger Experiment (Lyoko)
 
-To run multi-boat experiments in simulation using [Lyoko](https://github.gatech.edu/ASDL-Robotics/lyoko):
+Run this from the ROS 2 Jazzy container after dependencies are installed and the
+workspace is built:
 
 ```bash
-# Launch two simulated stingers in a shared Gazebo world
+cd ~/colcon_ws
+source /opt/ros/jazzy/setup.bash
+rosdep install --from-paths src --ignore-src -r -y
+colcon build --symlink-install
+source install/setup.bash
 ros2 launch lyoko_gz_bringup spawn_experiment.launch.py experiment_name:=two_stingers
 ```
 
-This starts the simulation world, computes staggered spawn poses, spawns each boat's URDF, configures per-vehicle topic bridges, and launches bringup stacks under `/stinger_1` and `/stinger_2`.
+Lyoko also imports the `urdf_bridge_builder` Python package at launch time. If
+that import is missing, install the helper in a workspace-local virtual
+environment and expose it to ROS's Python process:
+
+```bash
+cd ~/colcon_ws
+python3 -m venv --system-site-packages .venv
+.venv/bin/python -m pip install "git+https://github.com/seantfish/urdf-bridge-builder.git"
+export PYTHONPATH="$("$PWD/.venv/bin/python" -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')${PYTHONPATH:+:$PYTHONPATH}"
+```
+
+Run the export command again in any new terminal that launches Lyoko.
+
+The `two_stingers` experiment config starts one Lyoko-owned world and clock,
+spawns two Stingers at separate poses, creates each boat's Gazebo/ROS bridges,
+and starts the Stinger per-boat adapter. Each adapter starts that boat's
+robot-state publisher and localization stack using simulation time. Lyoko also
+sets `sitl: none` for both boats, so ArduPilot is not started.
+
+The first launch in a separate terminal owns the world and both boats. Do not
+also launch `vehicle_sim.launch.py`, `spawn.launch.py`,
+`vehicle_bridge.launch.py`, or `localization.launch.py` for either boat: those
+would duplicate the world, model, bridges, or nodes already started by the
+experiment.
+
+### Verify sensors, TF, and localization
+
+In another terminal in the same sourced container:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source ~/colcon_ws/install/setup.bash
+ros2 node list
+ros2 topic list | grep -E '^/(stinger_[12]/|ground_truth/)'
+```
+
+Check that both namespaces have camera, laser, IMU, and GPS topics, and that
+ground-truth odometry has a separate model-specific topic:
+
+```text
+/stinger_1/camera_0/image_raw
+/stinger_1/laser/scan
+/stinger_1/imu/data
+/stinger_1/gps/fix
+/stinger_2/camera_0/image_raw
+/stinger_2/laser/scan
+/stinger_2/imu/data
+/stinger_2/gps/fix
+/ground_truth/stinger_1_stinger_tug/odometry
+/ground_truth/stinger_2_stinger_tug/odometry
+```
+
+Use `ros2 topic hz <topic>` to confirm sensor messages are arriving. Run each
+`hz` command separately; it continues until interrupted:
+
+```bash
+ros2 topic hz /stinger_1/laser/scan
+ros2 topic hz /stinger_2/imu/data
+ros2 topic echo --once /ground_truth/stinger_1_stinger_tug/odometry
+```
+
+The localization stack republishes IMU data and fuses it with GPS-derived
+odometry. Check its inputs and filtered odometry:
+
+```bash
+ros2 topic hz /stinger_1/imu/relative
+ros2 topic hz /stinger_1/odometry/gps
+ros2 topic echo --once /stinger_1/odometry/filtered
+ros2 topic echo --once /stinger_2/odometry/filtered
+```
+
+Check the namespaced TF tree (the expected frame prefix includes a trailing
+underscore):
+
+```bash
+ros2 run tf2_ros tf2_echo stinger_1_odom stinger_1_base_link
+ros2 run tf2_ros tf2_echo stinger_1_base_link stinger_1_lidar
+ros2 run tf2_ros tf2_echo stinger_2_odom stinger_2_base_link
+ros2 run tf2_ros tf2_echo stinger_2_base_link stinger_2_lidar
+```
+
+`/clock` is started by Lyoko's world launch. Do not start another clock bridge.
+
+### Launching optional nodes independently
+
+The experiment already starts the world, boats, bridges, robot-state publishers,
+and localization nodes. To avoid duplicates, launch only additional nodes you
+need and set simulation time so they follow Gazebo's clock. For example, the
+controller launch can be started separately:
+
+```bash
+ros2 launch stinger_controller controller.launch.py use_sim_time:=true
+```
+
+For a node started with `ros2 run`, pass the simulation-time parameter like
+this:
+
+```bash
+ros2 run <package> <executable> --ros-args -p use_sim_time:=true
+```
+
+The current controller, perception, and autonomy nodes use legacy absolute
+single-boat topics such as `/stinger/...` and `/cmd_vel`. They are not yet
+namespaced for `/stinger_1` or `/stinger_2`; launching them does not make them
+work with both boats. Do not start `sensors.launch.py` for this simulation,
+since it starts hardware sensor drivers rather than using the experiment's
+Gazebo bridges. For standalone Stinger simulation, use the standalone launch
+instructions above and start only any nodes that `vehicle_sim.launch.py` does
+not already provide.
