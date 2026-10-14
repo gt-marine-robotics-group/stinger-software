@@ -40,3 +40,4 @@ dependencies = [
 sllidar_ros2 = { server = "github.com", namespace = "Slamtec", name = "sllidar_ros2", version = "main" }
 lyoko = { server = "github.gatech.edu", namespace = "ASDL-Robotics", name = "lyoko", version = "stinger-support" }
 coop-slam = { server = "github.gatech.edu", namespace = "ASDL-Robotics", name = "coop-slam", version = "main" }
+navigation2 = { server = "github.com", namespace = "ros-navigation", name = "navigation2", version = "main"}
