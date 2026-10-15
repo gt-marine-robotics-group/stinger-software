@@ -1,17 +1,21 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stinger_tug">
-  <xacro:arg name="prefix" default=""/>
-  <xacro:arg name="namespace" default="$(arg prefix)"/>
-  <xacro:arg name="topic_prefix" default="stinger"/>
+  <xacro:arg name="prefix" default="__default__"/>
+  <xacro:arg name="namespace" default="__default__"/>
+  <xacro:arg name="topic_prefix" default="__default__"/>
+  <xacro:property name="frame_prefix" value="${xacro.arg('prefix') if xacro.arg('prefix') != '__default__' else xacro.arg('namespace') + '_' if xacro.arg('namespace') != '__default__' else ''}"/>
+  <xacro:property name="resolved_topic_prefix" value="${xacro.arg('topic_prefix') if xacro.arg('topic_prefix') != '__default__' else xacro.arg('namespace') if xacro.arg('namespace') != '__default__' else 'stinger'}"/>
+  <xacro:property name="model_name" value="${xacro.arg('namespace') + '_stinger_tug' if xacro.arg('namespace') != '__default__' else 'stinger'}"/>
+  <xacro:include filename="$(find stinger_description)/models/stinger_base/simulation/gz.xacro"/>
   <xacro:include filename="$(find stinger_description)/models/stinger_base/stinger_base.xacro"/>
-  <link name="$(arg namespace)base_link">
+  <link name="${frame_prefix}base_link">
   </link>
   <xacro:stinger_base
-    prefix="$(arg namespace)"
-    topic_prefix="$(arg topic_prefix)"/>
-  <joint name="$(arg namespace)hull_joint" type="fixed">
+    prefix="${frame_prefix}"
+    topic_prefix="${resolved_topic_prefix}"/>
+  <joint name="${frame_prefix}hull_joint" type="fixed">
     <origin xyz="0 0 0"/>
-    <parent link="$(arg namespace)base_link"/>
-    <child link="$(arg namespace)hull_link"/>
+    <parent link="${frame_prefix}base_link"/>
+    <child link="${frame_prefix}hull_link"/>
   </joint>
 </robot>
