@@ -189,63 +189,6 @@ also launch `vehicle_sim.launch.py`, `spawn.launch.py`,
 would duplicate the world, model, bridges, or nodes already started by the
 experiment.
 
-### Verify sensors, TF, and localization
-
-In another terminal in the same sourced container:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-source ~/colcon_ws/install/setup.bash
-ros2 node list
-ros2 topic list | grep -E '^/(stinger_[12]/|ground_truth/)'
-```
-
-Check that both namespaces have camera, laser, IMU, and GPS topics, and that
-ground-truth odometry has a separate model-specific topic:
-
-```text
-/stinger_1/camera_0/image_raw
-/stinger_1/laser/scan
-/stinger_1/imu/data
-/stinger_1/gps/fix
-/stinger_2/camera_0/image_raw
-/stinger_2/laser/scan
-/stinger_2/imu/data
-/stinger_2/gps/fix
-/ground_truth/stinger_1_stinger_tug/odometry
-/ground_truth/stinger_2_stinger_tug/odometry
-```
-
-Use `ros2 topic hz <topic>` to confirm sensor messages are arriving. Run each
-`hz` command separately; it continues until interrupted:
-
-```bash
-ros2 topic hz /stinger_1/laser/scan
-ros2 topic hz /stinger_2/imu/data
-ros2 topic echo --once /ground_truth/stinger_1_stinger_tug/odometry
-```
-
-The localization stack republishes IMU data and fuses it with GPS-derived
-odometry. Check its inputs and filtered odometry:
-
-```bash
-ros2 topic hz /stinger_1/imu/relative
-ros2 topic hz /stinger_1/odometry/gps
-ros2 topic echo --once /stinger_1/odometry/filtered
-ros2 topic echo --once /stinger_2/odometry/filtered
-```
-
-Check the namespaced TF tree (the expected frame prefix includes a trailing
-underscore):
-
-```bash
-ros2 run tf2_ros tf2_echo stinger_1_odom stinger_1_base_link
-ros2 run tf2_ros tf2_echo stinger_1_base_link stinger_1_lidar
-ros2 run tf2_ros tf2_echo stinger_2_odom stinger_2_base_link
-ros2 run tf2_ros tf2_echo stinger_2_base_link stinger_2_lidar
-```
-
-`/clock` is started by Lyoko's world launch. Do not start another clock bridge.
 
 ### Launching optional nodes independently
 
