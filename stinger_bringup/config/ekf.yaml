@@ -1,5 +1,5 @@
 ### ekf config file -- see https://github.com/cra-ros-pkg/robot_localization/blob/ros2/params/ekf.yaml###
-ekf_filter_node:
+/**/ekf_filter_node:
     ros__parameters:
         
         # Fallback for direct node startup; launch files override the clock mode.
