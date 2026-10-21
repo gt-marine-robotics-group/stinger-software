@@ -27,7 +27,7 @@ ssh tug05@100.99.163.64
 ```
 cd ~/ors_ws/src/stinger-software
 git fetch origin
-git checkout hardware-launch
+git checkout multi-vehicle
 git pull
 cd ~/ors_ws && colcon build
 source install/setup.bash
