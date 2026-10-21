@@ -6,6 +6,8 @@ Where each command runs:
 - Laptop = your computer
 - Boat = tug05, after you ssh in
 
+The IP, username, and passwords are for tug05.
+
 Each `ros2` command keeps its terminal busy, so open a new terminal tab and log in to the boat again for the next one.
 
 ### 1. Power on (Boat)
@@ -19,6 +21,16 @@ ssh tug05@192.168.2.205
 Connect remotely with Tailscale (see "Remote access with Tailscale" below):
 ```
 ssh tug05@100.99.163.64
+```
+
+### Update the code (SKIP if up to date)
+```
+cd ~/ors_ws/src/stinger-software
+git fetch origin
+git checkout hardware-launch
+git pull
+cd ~/ors_ws && colcon build
+source install/setup.bash
 ```
 
 ### 3. Permissions (Once after every power-on)
@@ -73,11 +85,6 @@ sudo shutdown now
 ```
 Wait until the Pi's green light stops blinking, then turn off the boat, then the wall supply.
 
-### After code changes (terminal)
-```
-cd ~/ors_ws && colcon build
-source ~/ors_ws/install/setup.bash
-```
 
 ## Remote access with Tailscale
 
@@ -91,12 +98,6 @@ source ~/ors_ws/install/setup.bash
 1. Make sure Tailscale is connected on your laptop.
 2. `ssh tug05@100.99.163.64`
 3. Continue from step 3 (Permissions) above.
-
-### Boat addresses
-| | Lab Wi-Fi | Tailscale |
-|---|---|---|
-| ssh | `tug05@192.168.2.205` | `tug05@100.99.163.64` |
-| Foxglove | `ws://192.168.2.205:8765` | `ws://100.99.163.64:8765` |
 
 ### Troubleshooting
 - ssh hangs: check that Tailscale is connected and `tug05-desktop` shows as online.
