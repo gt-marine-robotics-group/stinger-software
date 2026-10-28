@@ -46,7 +46,7 @@ Connect to wifi on your laptop: `GL-MT3000-0a9`  OR  `GL-MT3000-0a9-5G`
 
 For Research Demo Tug:
 ```
-ssh tug1@192.168.8.189
+ssh tug05@192.168.2.205
 pw: boats0519
 ```
 
