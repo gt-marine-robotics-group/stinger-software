@@ -139,7 +139,7 @@ qix stack enter stinger-software
 To install binary dependencies for workspace packages:
 ```bash
 rosdep update
-rosdep install --from-paths /workspace/src --ignore-src -y -r
+rosdep install --from-paths src --ignore-src -y -r
 colcon build
 ```
 
