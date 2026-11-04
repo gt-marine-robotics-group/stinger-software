@@ -1,4 +1,4 @@
-navsat_transform_node:
+/**/navsat_transform_node:
     ros__parameters:
         # Fallback for direct node startup; launch files override the clock mode.
         use_sim_time: false
