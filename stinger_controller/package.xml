@@ -7,7 +7,7 @@
   <maintainer email="jeff300fang@gmail.com">root</maintainer>
   <license>TODO: License declaration</license>
 
-  <depend>urdfdom-py</depend>
+  <depend>urdfdom_py</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

@@ -29,6 +29,7 @@ setup(
             'gps-node = stinger_bringup.gps:main',
             'imu-node = stinger_bringup.imu:main',
             'motor-node = stinger_bringup.motor:main',
+            'teleop-keyboard = stinger_bringup.teleop_keyboard:main',
             'imu_republisher=stinger_bringup.imu_republisher:main'
         ],
     },

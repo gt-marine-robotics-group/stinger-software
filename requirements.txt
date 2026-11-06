@@ -1,4 +1,4 @@
 board
 adafruit-circuitpython-icm20x
-serial
+pyserial
 RPi.GPIO
