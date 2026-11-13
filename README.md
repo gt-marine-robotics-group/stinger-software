@@ -78,15 +78,25 @@ The motor node consumes `/thrusters/left/thrust` and `/thrusters/right/thrust` a
 The planned `vehicle_real.launch.py` must default `use_sim_time` to `false` and explicitly forward it to every included launch and node that accepts it. If localization supplies the robot-state publisher, pass `publish_robot_description:=true`; if the hardware wrapper supplies one, pass `false`. Run exactly one publisher. Keep shared YAML clock defaults at `false`, with launch overrides after the YAML parameters.
 
 ## Simulation Quick start
+Run every command below inside the container, in a terminal prepared as described
+in [Opening a new terminal](#4-opening-a-new-terminal). To see Gazebo, follow
+[Viewing the Gazebo GUI (noVNC)](#5-viewing-the-gazebo-gui-novnc).
+
 ```bash
 ros2 launch stinger_bringup vehicle_sim.launch.py
 ```
+
+`vehicle_sim.launch.py` starts the world, spawns `stinger`, starts its bridge, and
+(after a 5 s delay) starts its localization.
 
 ## Standalone Multi-boat Simulation (without Lyoko)
 
 Use this flow when launching Stinger's own Gazebo world. Do not use it together
 with the Lyoko experiment below: `vehicle_sim.launch.py` starts its own world,
-boat, and bridge.
+boat, bridge, and localization for the first boat.
+
+Each terminal below is a new shell inside the container, so prepare every one of
+them first as described in [Opening a new terminal](#4-opening-a-new-terminal).
 
 Start the simulation and first boat (`stinger`) in Terminal 1:
 
@@ -136,12 +146,19 @@ qix stack enter stinger-software
 ```
 
 ### 2. Install ROS Dependencies (Inside Container)
-To install binary dependencies for workspace packages:
+From the workspace root (`~/colcon_ws`, the folder that contains `src/`), source
+ROS 2 first, then install the binary dependencies and build:
 ```bash
+cd ~/colcon_ws
+source /opt/ros/jazzy/setup.bash
 rosdep update
 rosdep install --from-paths src --ignore-src -y -r
 colcon build
 ```
+
+> If every package fails with `ModuleNotFoundError: No module named 'ament_package'`,
+> ROS 2 was not sourced in that shell. Run `source /opt/ros/jazzy/setup.bash`,
+> delete the failed build with `rm -rf build install log`, and run `colcon build` again.
 
 ### 3. Recording Rosbags
 Host storage is bind-mounted to `~/bags` inside the container:
@@ -149,6 +166,28 @@ Host storage is bind-mounted to `~/bags` inside the container:
 # Records bag directly to ~/bags on your host machine
 ros2 bag record -o ~/bags/<bag_name> <topics>
 ```
+
+### 4. Opening a new terminal
+Every terminal (each simulation terminal included) is a separate shell and must be
+prepared before running `ros2` commands. From your host machine:
+```bash
+qix stack enter stinger-software
+cd ~/colcon_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+```
+Skipping the last step gives `ros2: command not found` or `Package '...' not found`.
+
+### 5. Viewing the Gazebo GUI (noVNC)
+Gazebo's window is drawn inside the container's noVNC display, which you open in a
+browser on your host. The host port is assigned by Docker and is **not always
+8080**. Check it from a host terminal (outside the container):
+```bash
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+```
+Find the `...-novnc` container. In a mapping such as `0.0.0.0:8081->8080/tcp`, the
+host port is the number left of the arrow, so open
+`http://localhost:8081/vnc.html` and click **Connect**.
 
 ## Two-Stinger Experiment (Lyoko)
 
