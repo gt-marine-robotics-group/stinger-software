@@ -102,3 +102,31 @@ Wait until the Pi's green light stops blinking, then turn off the boat, then the
 ### Troubleshooting
 - ssh hangs: check that Tailscale is connected and `tug05-desktop` shows as online.
 - Foxglove will not connect: check that `foxglove_bridge` is running on the boat (step 7).
+
+## SSH Key Debugging
+To clone/pull repos on the tug, we SSH in with `ssh -A`.
+* `-A` flag forwards your laptop's SSH agent to the Pi, so the Pi can use **your** SSH key to talk to GitHub without the key ever being copied onto it.
+
+### The problem
+
+Sometimes `git clone` over SSH fails (usually with `Permission denied (publickey)`) even if you have a key. This likely means the SSH agent isn't running/it's running but your key isn't loaded into it.
+
+### Check
+
+Run:
+
+```bash
+ssh-add -l
+```
+
+If you see a list of active SSH keys, your agent is working. If you see `Could not open a connection to your authentication agent` or `The agent has no identities`, you need to add your key. Run:
+
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+```
+
+* `eval "$(ssh-agent -s)"` starts the SSH agent and tells your terminal where to find it.
+* `ssh-add ~/.ssh/id_ed25519` loads your private key into the agent.
+
+Run `ssh-add -l` again to confirm your key shows up, then SSH into the tug with `ssh -A` and clone again.
