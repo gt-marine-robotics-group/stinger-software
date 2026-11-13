@@ -1,0 +1,44 @@
+# Sensors
+- ros_topic_name: "/@TOPIC_PREFIX@/camera_0/image_raw"
+  gz_topic_name: "/@TOPIC_PREFIX@/camera_0/image_raw"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/@TOPIC_PREFIX@/laser/scan"
+  gz_topic_name: "/@TOPIC_PREFIX@/laser/scan"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/@TOPIC_PREFIX@/imu/data"
+  gz_topic_name: "/@TOPIC_PREFIX@/imu/data"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/@TOPIC_PREFIX@/gps/fix"
+  gz_topic_name: "/@TOPIC_PREFIX@/gps/fix"
+  ros_type_name: "sensor_msgs/msg/NavSatFix"
+  gz_type_name: "gz.msgs.NavSat"
+  direction: GZ_TO_ROS
+
+# Thrusters
+- ros_topic_name: "/@TOPIC_PREFIX@/thruster_port/cmd_thrust"
+  gz_topic_name: "/model/@MODEL_NAME@/joint/@JOINT_PREFIX@prop_joint_port/cmd_thrust"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "gz.msgs.Double"
+  direction: ROS_TO_GZ
+
+- ros_topic_name: "/@TOPIC_PREFIX@/thruster_stbd/cmd_thrust"
+  gz_topic_name: "/model/@MODEL_NAME@/joint/@JOINT_PREFIX@prop_joint_stbd/cmd_thrust"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "gz.msgs.Double"
+  direction: ROS_TO_GZ
+
+# Ground-truth odometry is intentionally separate from estimated odometry.
+- ros_topic_name: "/ground_truth/@MODEL_NAME@/odometry"
+  gz_topic_name: "/model/@MODEL_NAME@/odometry_with_covariance"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.OdometryWithCovariance"
+  direction: GZ_TO_ROS

@@ -31,7 +31,7 @@ def generate_launch_description():
     )
 
 
-    bridge_config_path = os.path.join(pkg_stinger_sim, 'config','bridge.yml')
+    bridge_config_path = os.path.join(pkg_stinger_sim, 'config', 'clock_bridge.yml')
 
     # Bridge
     bridge = Node(

@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
- <xacro:macro name="camera_macro" params="camera_id *origin">
-    <link name="camera_${camera_id}"/>
+ <xacro:macro name="camera_macro" params="prefix topic_prefix camera_id *origin">
+   <link name="${prefix}camera_${camera_id}"/>
 
-    <joint name="camera_joint_${camera_id}" type="fixed">
+   <joint name="${prefix}camera_joint_${camera_id}" type="fixed">
       <xacro:insert_block name="origin"/>
-      <parent link="hull_link"/>
-      <child link="camera_${camera_id}"/>
+      <parent link="${prefix}hull_link"/>
+      <child link="${prefix}camera_${camera_id}"/>
       <axis xyz="1 0 0"/>
     </joint>
 
-    <gazebo reference="camera_${camera_id}">
+    <gazebo reference="${prefix}camera_${camera_id}">
       <sensor name="camera_${camera_id}" type="camera">
         <camera>
           <horizontal_fov>1.09956</horizontal_fov>
@@ -27,22 +27,22 @@
         <always_on>1</always_on>
         <update_rate>10</update_rate>
         <visualize>true</visualize>
-        <topic>stinger/camera_${camera_id}/image_raw</topic>
+        <topic>/${topic_prefix}/camera_${camera_id}/image_raw</topic>
       </sensor>
     </gazebo>
   </xacro:macro>
 
-  <xacro:macro name="lidar_macro" params="*origin">
-    <link name="lidar"/>
+  <xacro:macro name="lidar_macro" params="prefix topic_prefix *origin">
+    <link name="${prefix}lidar"/>
 
-    <joint name="lidar_joint" type="fixed">
+    <joint name="${prefix}lidar_joint" type="fixed">
       <xacro:insert_block name="origin"/>
-      <parent link="hull_link"/>
-      <child link="lidar"/>
+      <parent link="${prefix}hull_link"/>
+      <child link="${prefix}lidar"/>
       <axis xyz="1 0 0"/>
     </joint>
 
-    <gazebo reference="lidar">
+    <gazebo reference="${prefix}lidar">
       <sensor name="lidar" type="gpu_lidar">
         <lidar>
           <scan>
@@ -67,52 +67,52 @@
         <always_on>1</always_on>
         <update_rate>10</update_rate>
         <visualize>true</visualize>
-        <topic>stinger/laser/scan</topic>
+        <topic>/${topic_prefix}/laser/scan</topic>
 
-        <gz_frame_id>lidar</gz_frame_id>
+        <gz_frame_id>${prefix}lidar</gz_frame_id>
       </sensor>
     </gazebo>
   </xacro:macro>
 
-  <xacro:macro name="imu_macro" params="*origin">
-    <link name="imu_link"/>
+  <xacro:macro name="imu_macro" params="prefix topic_prefix *origin">
+    <link name="${prefix}imu_link"/>
 
-    <joint name="imu_joint" type="fixed">
+    <joint name="${prefix}imu_joint" type="fixed">
       <xacro:insert_block name="origin"/>
-      <parent link="base_link"/>
-      <child link="imu_link"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}imu_link"/>
       <axis xyz="1 0 0"/>
     </joint>
 
-    <gazebo reference="imu_link">
+    <gazebo reference="${prefix}imu_link">
       <sensor name="imu_sensor" type="imu">
         <pose>0 0 0 0 0 0</pose>
         <always_on>1</always_on>
-        <topic>stinger/imu/data</topic>
+        <topic>/${topic_prefix}/imu/data</topic>
         <enable_metrics>true</enable_metrics>
         <update_rate>100</update_rate>
 
         <!-- This tag isn't recognized by SDF but is extremely important for getting the correct TF data for the IMU frame-->
-        <gz_frame_id>imu_link</gz_frame_id>
+        <gz_frame_id>${prefix}imu_link</gz_frame_id>
       </sensor>
     </gazebo>
   </xacro:macro>
 
-  <xacro:macro name="gps_macro" params="*origin">
-    <link name="gps_link"/>
+  <xacro:macro name="gps_macro" params="prefix topic_prefix *origin">
+    <link name="${prefix}gps_link"/>
 
-    <joint name="gps_joint" type="fixed">
+    <joint name="${prefix}gps_joint" type="fixed">
       <xacro:insert_block name="origin"/>
-      <parent link="hull_link"/>
-      <child link="gps_link"/>
+      <parent link="${prefix}hull_link"/>
+      <child link="${prefix}gps_link"/>
     </joint>
 
-    <gazebo reference="gps_link">
+    <gazebo reference="${prefix}gps_link">
       <sensor name="gps_sensor" type="navsat">
         <always_on>1</always_on>
         <update_rate>10</update_rate>
-        <topic>stinger/gps/fix</topic>
-        <gz_frame_id>gps_link</gz_frame_id>
+        <topic>/${topic_prefix}/gps/fix</topic>
+        <gz_frame_id>${prefix}gps_link</gz_frame_id>
       </sensor>
     </gazebo>
   </xacro:macro>

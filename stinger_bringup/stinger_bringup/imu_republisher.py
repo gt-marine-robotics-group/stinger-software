@@ -10,15 +10,23 @@ from tf2_ros import TransformListener, Buffer
 class ImuRepublisher(Node):
     def __init__(self):
         super().__init__('imu_republisher')
+        self.declare_parameter('input_topic', '/stinger/imu/data')
+        self.declare_parameter('output_topic', '/stinger/imu/relative')
+        self.declare_parameter('target_frame', 'base_link')
+        self.declare_parameter('output_frame', 'base_link')
+        input_topic = self.get_parameter('input_topic').value
+        output_topic = self.get_parameter('output_topic').value
+        self.target_frame = self.get_parameter('target_frame').value
+        self.output_frame = self.get_parameter('output_frame').value
         self.create_subscription(
             Imu,
-            '/stinger/imu/data',
+            input_topic,
             self.imu_callback,
             10
         )
         self.imu_pub = self.create_publisher(
             Imu,
-            '/stinger/imu/relative',
+            output_topic,
             10
         )
         self.tf_buffer = Buffer()
@@ -33,7 +41,7 @@ class ImuRepublisher(Node):
         # Extract transform from imu to base link from tf tree
         try:
             transform = self.tf_buffer.lookup_transform(
-                target_frame='base_link',
+                target_frame=self.target_frame,
                 source_frame=msg.header.frame_id,
                 time=rclpy.time.Time(),
                 timeout=Duration(seconds=1.0)
@@ -66,7 +74,7 @@ class ImuRepublisher(Node):
         transformed_msg = Imu()
         transformed_msg.header.stamp = msg.header.stamp
         # Notice that the new frame is now in our base_link frame as desired
-        transformed_msg.header.frame_id = 'base_link'
+        transformed_msg.header.frame_id = self.output_frame
         transformed_msg.orientation.x = transformed_orientation[0]
         transformed_msg.orientation.y = transformed_orientation[1]
         transformed_msg.orientation.z = transformed_orientation[2]

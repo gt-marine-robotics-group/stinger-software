@@ -3,9 +3,9 @@
     <xacro:include filename="$(find stinger_description)/models/stinger_base/components/sensors.xacro"/>
     <xacro:include filename="$(find stinger_description)/models/stinger_base/components/thrusters.xacro"/>
 
-    <xacro:macro name="stinger_base">
+    <xacro:macro name="stinger_base" params="prefix topic_prefix">
 
-    <link name="hull_link">
+    <link name="${prefix}hull_link">
       <inertial>
         <pose>0.0 0.0 -0.13 0 0 0</pose>
         <mass value="3"/>
@@ -20,7 +20,7 @@
     </link>
 
     <!-- port hull -->
-    <link name="hull_port_link">
+    <link name="${prefix}hull_port_link">
       <inertial>
         <mass value="1.0"/>
         <inertia ixx="0.01" iyy="0.01" izz="0.01"
@@ -39,14 +39,14 @@
         </geometry>
       </collision>
     </link>
-    <joint name="hull_port_joint" type="fixed">
+    <joint name="${prefix}hull_port_joint" type="fixed">
       <origin xyz="0.0 0.0765 -0.035"/>
-      <parent link="hull_link"/>
-      <child link="hull_port_link"/>
+      <parent link="${prefix}hull_link"/>
+      <child link="${prefix}hull_port_link"/>
     </joint>
 
     <!-- starboard hull -->
-    <link name="hull_stbd_link">
+    <link name="${prefix}hull_stbd_link">
       <inertial>
         <mass value="1.0"/>
         <inertia ixx="0.01" iyy="0.01" izz="0.01"
@@ -66,36 +66,36 @@
           </geometry>
       </collision>
     </link>
-    <joint name="hull_stbd_joint" type="fixed">
+    <joint name="${prefix}hull_stbd_joint" type="fixed">
       <origin xyz="0.0 -0.0765 -0.035"/>
-      <parent link="hull_link"/>
-      <child link="hull_stbd_link"/>
+      <parent link="${prefix}hull_link"/>
+      <child link="${prefix}hull_stbd_link"/>
     </joint>
 
 
     <!-- Thrusters -->
-    <xacro:prop_macro thruster_id="port">
+    <xacro:prop_macro prefix="${prefix}" thruster_id="port">
       <origin xyz="-0.19 0.073 -0.041" rpy="0 0 0" />
     </xacro:prop_macro>
 
-    <xacro:prop_macro thruster_id="stbd">
+    <xacro:prop_macro prefix="${prefix}" thruster_id="stbd">
       <origin xyz="-0.19 -0.073 -0.041" rpy="0 0 0" />
     </xacro:prop_macro>
 
     <!-- Sensors -->
-    <xacro:camera_macro camera_id="0">
+    <xacro:camera_macro prefix="${prefix}" topic_prefix="${topic_prefix}" camera_id="0">
       <origin xyz="0.16 0 0.012" rpy="0 0 0" />
     </xacro:camera_macro>
 
-    <xacro:lidar_macro>
+    <xacro:lidar_macro prefix="${prefix}" topic_prefix="${topic_prefix}">
       <origin xyz="0.1 0 0.1" rpy="0 0 0" />
     </xacro:lidar_macro>
 
-    <xacro:imu_macro>
+    <xacro:imu_macro prefix="${prefix}" topic_prefix="${topic_prefix}">
       <origin xyz="-0.05 0 0.025" rpy="3.14 0 0" />
     </xacro:imu_macro>
 
-    <xacro:gps_macro>
+    <xacro:gps_macro prefix="${prefix}" topic_prefix="${topic_prefix}">
       <origin xyz="-0.05 0 0.025" rpy="0 0 0" />
     </xacro:gps_macro>
 
@@ -104,7 +104,7 @@
       <plugin
         filename="gz-sim-hydrodynamics-system"
         name="gz::sim::systems::Hydrodynamics">
-        <link_name> base_link </link_name>
+        <link_name>${prefix}base_link</link_name>
         
         <!-- Linear Drag -->
         <xU>-5</xU> <!-- Surge -->

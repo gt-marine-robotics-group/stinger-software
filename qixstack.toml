@@ -1,0 +1,42 @@
+[stack]
+name = "stinger-software"
+version = "26.10.1"
+
+[container]
+base = "ros:jazzy"
+package-manager = "apt"
+
+pre-setup = [
+    "touch /var/mail/ubuntu && chown ubuntu /var/mail/ubuntu && userdel -r ubuntu"
+]
+mounts = [
+    { source="/dev", target="/dev" },
+    { source="/run/udev", target="/run/udev:ro" },
+    { source="$HOME/bags", target="/home/stinger-software/bags" }
+]
+
+[system.apt]
+dependencies = [
+    "python3-colcon-common-extensions",
+    "python3-pip",
+    "git",
+    "tmux",
+    "nano"
+]
+
+
+[system.pip]
+break-system-packages = true
+dependencies = [
+    "pyserial",
+    "numpy<2",
+    "transforms3d",
+    "pigpio",
+    "Adafruit-Blinka",
+    "adafruit-circuitpython-icm20x",
+]
+
+[tool.colcon.dependencies]
+sllidar_ros2 = { server = "github.com", namespace = "Slamtec", name = "sllidar_ros2", version = "main" }
+lyoko = { server = "github.gatech.edu", namespace = "ASDL-Robotics", name = "lyoko", version = "stinger-support" }
+coop-slam = { server = "github.gatech.edu", namespace = "ASDL-Robotics", name = "coop-slam", version = "main" }
