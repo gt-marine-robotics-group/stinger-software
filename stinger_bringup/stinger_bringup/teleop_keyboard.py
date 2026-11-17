@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
 Robust WASD Keyboard Teleop Node for Stinger Tugboat.
-Publishes directly to motor thrust topics:
+By default, publishes directly to motor thrust topics:
   - /thrusters/left/thrust  (std_msgs/Float64)
   - /thrusters/right/thrust (std_msgs/Float64)
   - /stinger/thruster_port/cmd_thrust (std_msgs/Float64)
   - /stinger/thruster_stbd/cmd_thrust (std_msgs/Float64)
+
+Set the sim_boat parameter to publish only to that boat's Gazebo thruster topics.
 """
 
 import sys
@@ -72,11 +74,15 @@ class TeleopKeyboardNode(Node):
     def __init__(self):
         super().__init__('stinger_teleop_keyboard')
 
-        # Publishers for both topic naming conventions
-        self.pub_left = self.create_publisher(Float64, '/thrusters/left/thrust', 10)
-        self.pub_right = self.create_publisher(Float64, '/thrusters/right/thrust', 10)
-        self.pub_port_stinger = self.create_publisher(Float64, '/stinger/thruster_port/cmd_thrust', 10)
-        self.pub_stbd_stinger = self.create_publisher(Float64, '/stinger/thruster_stbd/cmd_thrust', 10)
+        sim_boat = self.declare_parameter('sim_boat', '').value
+        boat = sim_boat or 'stinger'
+        topic_pairs = [(f'/{boat}/thruster_port/cmd_thrust', f'/{boat}/thruster_stbd/cmd_thrust')]
+        if not sim_boat:
+            topic_pairs.insert(0, ('/thrusters/left/thrust', '/thrusters/right/thrust'))
+        self.thruster_publishers = [
+            (self.create_publisher(Float64, left, 10), self.create_publisher(Float64, right, 10))
+            for left, right in topic_pairs
+        ]
 
         # State
         self.linear_speed = 0.0      # Forward / Reverse [-100, 100]
@@ -97,27 +103,24 @@ class TeleopKeyboardNode(Node):
         left_thrust = max(-self.max_thrust, min(self.max_thrust, left_thrust))
         right_thrust = max(-self.max_thrust, min(self.max_thrust, right_thrust))
 
-        msg_l = Float64(data=float(left_thrust))
-        msg_r = Float64(data=float(right_thrust))
-
-        self.pub_left.publish(msg_l)
-        self.pub_right.publish(msg_r)
-        self.pub_port_stinger.publish(msg_l)
-        self.pub_stbd_stinger.publish(msg_r)
+        self.publish_thrust(left_thrust, right_thrust)
 
         # Formatted status line
         status = f"\r[THROTTLE] Fwd/Rev: {self.linear_speed:+5.1f}% | Turn: {self.angular_speed:+5.1f}% |-> Left: {left_thrust:+5.1f}% | Right: {right_thrust:+5.1f}% | Step: {self.step_size:.1f}%    "
         sys.stdout.write(status)
         sys.stdout.flush()
 
+    def publish_thrust(self, left_thrust, right_thrust):
+        left = Float64(data=float(left_thrust))
+        right = Float64(data=float(right_thrust))
+        for left_publisher, right_publisher in self.thruster_publishers:
+            left_publisher.publish(left)
+            right_publisher.publish(right)
+
     def stop_motors(self):
         self.linear_speed = 0.0
         self.angular_speed = 0.0
-        msg_zero = Float64(data=0.0)
-        self.pub_left.publish(msg_zero)
-        self.pub_right.publish(msg_zero)
-        self.pub_port_stinger.publish(msg_zero)
-        self.pub_stbd_stinger.publish(msg_zero)
+        self.publish_thrust(0.0, 0.0)
         sys.stdout.write("\r[STATUS] MOTORS STOPPED (0% Thrust)                                                 \n")
         sys.stdout.flush()
 
