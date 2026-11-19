@@ -382,5 +382,56 @@
       </link>
     </model>
 
+
+    <model name="blue_buoy">
+      <pose>-4 3 0.1 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <sphere>
+              <radius>0.25</radius>
+            </sphere>
+          </geometry>
+          <material>
+            <ambient>0.1 0.35 1 1</ambient>
+            <diffuse>0.1 0.35 1 1</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <sphere>
+              <radius>0.25</radius>
+            </sphere>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="orange_buoy">
+      <pose>9 -4 0.1 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <sphere>
+              <radius>0.25</radius>
+            </sphere>
+          </geometry>
+          <material>
+            <ambient>1 0.45 0 1</ambient>
+            <diffuse>1 0.45 0 1</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <sphere>
+              <radius>0.25</radius>
+            </sphere>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
   </world>
 </sdf>
