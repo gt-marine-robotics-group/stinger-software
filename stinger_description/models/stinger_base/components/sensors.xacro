@@ -45,6 +45,8 @@
     <gazebo reference="${prefix}lidar">
       <sensor name="lidar" type="gpu_lidar">
         <lidar>
+          <!-- Exclude the visibility bit reserved for the water visual. -->
+          <visibility_mask>4294967293</visibility_mask>
           <scan>
             <horizontal>
               <samples>360</samples>
