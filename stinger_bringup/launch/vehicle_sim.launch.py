@@ -65,22 +65,21 @@ def generate_launch_description():
     )
     ld.append(vehicle_bridge)
 
-    # TODO: Uncomment after completing section 4
-    # localization = launch.actions.IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         PathJoinSubstitution([
-    #             get_package_share_directory('stinger_bringup'),
-    #             'launch',
-    #             'localization.launch.py'
-    #         ]),
-    #     ),
-    #     launch_arguments={
-    #         'use_sim_time': use_sim_time,
-    #         'publish_robot_description': 'false'
-    #     }.items()
-    # )
-    # # Delay to allow sensors to populate
-    # delayed_localization = TimerAction(period=5.0, actions=[localization])
-    # ld.append(delayed_localization)
+    localization = launch.actions.IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                get_package_share_directory('stinger_bringup'),
+                'launch',
+                'localization.launch.py'
+            ]),
+        ),
+        launch_arguments={
+            'use_sim_time': use_sim_time,
+            'publish_robot_description': 'false'
+        }.items()
+    )
+    # Delay to allow sensors to populate
+    delayed_localization = TimerAction(period=5.0, actions=[localization])
+    ld.append(delayed_localization)
 
     return LaunchDescription(ld)
